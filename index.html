@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>press ok after inputting the password</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #imageContainer {
+            display: none;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to My Protected Website</h1>
+    <button onclick="checkPassword()">Enter Password</button>
+    <div id="imageContainer">
+        <img src="gdsfsdgfgsfd.png" alt="Hidden Image">
+    </div>
+
+    <script>
+        function checkPassword() {
+            const correctPassword = "mypassword"; // Replace with your desired password
+            const userPassword = prompt("Enter the password to view the image:");
+            if (userPassword === correctPassword) {
+                alert(".... - - .--. ... ---... -..-. -..-. .--. .- ... - . -... .. -. (PLEASE PRESS OK TO SEE THE IMAGE)");
+                document.getElementById("imageContainer").style.display = "block";
+            } else if (userPassword !== null) {
+                alert("Incorrect password. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
