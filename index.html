@@ -23,20 +23,24 @@
             align-items: center;
             gap: 10px;
         }
-        .spin-stretch {
+        .stretch-flip {
             width: 0px;
             height: 50px;
-            animation: pulseWidth 1s ease-out infinite alternate;
+            animation: flipStretch 1s ease-out infinite alternate;
         }
 
-        @keyframes pulseWidth {
+        @keyframes flipStretch {
             0% {
                 width: 0px;
-                transform: rotate(0deg);
+                transform: scaleX(1);
+            }
+            50% {
+                width: 50px;
+                transform: scaleX(1);
             }
             100% {
-                width: 50px;
-                transform: rotate(360deg);
+                width: 0px;
+                transform: scaleX(-1);
             }
         }
     </style>
@@ -46,7 +50,7 @@
 
     <div class="button-container">
         <button onclick="checkPassword()">Enter Password</button>
-        <img src="ratcatcher.jpg" alt="Ratcether" class="spin-stretch">
+        <img src="ratcatcher.jpg" alt="Ratcatcher" class="stretch-flip">
     </div>
 
     <div id="imageContainer">
