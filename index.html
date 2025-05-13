@@ -18,18 +18,44 @@
             max-width: 100%;
             height: auto;
         }
+        .button-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .spin-stretch {
+            width: 0px;
+            height: 50px;
+            animation: pulseWidth 1s ease-out infinite alternate;
+        }
+
+        @keyframes pulseWidth {
+            0% {
+                width: 0px;
+                transform: rotate(0deg);
+            }
+            100% {
+                width: 50px;
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
     <h1>Not much time is left, IT is approaching, you must prepare, it will be way more unpredictable that the 1st edition. WHILE YOU STILL CAN. :)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))</h1>
-    <button onclick="checkPassword()">Enter Password</button>
+
+    <div class="button-container">
+        <button onclick="checkPassword()">Enter Password</button>
+        <img src="ratcether.jpg" alt="Ratcether" class="spin-stretch">
+    </div>
+
     <div id="imageContainer">
         <img src="Screenshot 2025-05-13 224508.png" alt="Hidden Image">
     </div>
 
     <script>
         function checkPassword() {
-            const correctPassword = "tekk32b64/128^eMC^&s'e]]as[[o*#n2:S;;oo;4N/a!a43nr.3.6,12.2"; // Replace with your desired password
+            const correctPassword = "tekk32b64/128^eMC^&s'e]]as[[o*#n2:S;;oo;4N/a!a43nr.3.6,12.2";
             const userPassword = prompt("3nter password");
             if (userPassword === correctPassword) {
                 alert("53450n 2 v3r7 500n (press ok)");
