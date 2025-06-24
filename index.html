@@ -3,73 +3,51 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>How's your weather? :)</title>
+<title>Darius’ Ultimate Useless Dashboard</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: monospace;
+    background: #fafafa;
+    color: #222;
     text-align: center;
-    margin: 50px;
+    padding: 40px;
   }
+  h1 { margin-bottom: 30px; }
   .button-container {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center;
+    margin-bottom: 20px;
   }
-  img {
-    max-width: 100%;
-    height: auto;
-  }
-  /* Spinning ratcatcher */
-  .stretch-flip {
-    width: 50px; height: 50px;
-    animation: spin 2s linear infinite;
+  #ratcatcher {
+    width: 60px; height: 60px;
+    animation: spin 3s linear infinite;
     cursor: pointer; position: relative;
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
   }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
+  @keyframes spin { to { transform: rotate(360deg) } }
+  .boop { animation: boopAnim .2s ease forwards }
+  @keyframes boopAnim { 50% { transform: scale(1.3) rotate(-20deg) } }
+  .confetti, .particle {
+    position: absolute; pointer-events: none;
+    will-change: transform, opacity;
   }
-  /* Boop */
-  .boop { animation: boopAnim 0.2s ease forwards; }
-  @keyframes boopAnim {
-    50% { transform: rotate(-15deg) scale(1.2); }
-  }
-  /* Particles */
-  .particle {
-    position: absolute; width: 6px; height: 6px;
-    background: #eee; border-radius: 50%;
-    pointer-events: none; animation: particleMove 1s forwards;
-  }
-  @keyframes particleMove {
-    to { transform: translate(var(--x),var(--y)); opacity:0; }
-  }
-  /* Confetti */
-  .confetti {
-    position: absolute; width:8px; height:8px;
-    background-color: var(--color);
-    pointer-events: none; animation: confettiMove 1.5s forwards;
-  }
-  @keyframes confettiMove {
-    to { transform: translate(var(--x),var(--y)) rotate(360deg) scale(0.7); opacity:0; }
-  }
-  /* Info Panel */
+  /* info list */
   #infoPanel {
-    margin-top: 30px; font-family: monospace; color: #333;
-    line-height:1.4em; text-align:left; display:inline-block;
+    display: inline-block;
+    text-align: left;
+    margin-top: 0;
+    line-height: 1.5em;
   }
+  #infoPanel p { margin: 5px 0; }
 </style>
 </head>
 <body>
 
-  <h1>Darius cool website because why not.</h1>
+  <h1>Darius’ Ultimate Useless Dashboard</h1>
 
   <div class="button-container">
     <button onclick="checkPassword()">Enter Password</button>
-    <img id="ratcatcher" src="ratcatcher.jpg" class="stretch-flip" alt="Ratcatcher">
-  </div>
-
-  <div id="imageContainer" style="display:none; margin-top:20px;">
-    <img src="Screenshot 2025-05-13 224508.png" alt="Hidden Image">
+    <img id="ratcatcher" src="ratcatcher.jpg" alt="Ratcatcher">
   </div>
 
   <div id="infoPanel">
@@ -80,43 +58,50 @@
     <p id="mousePos">Mouse X,Y: 0, 0</p>
     <p id="mouseSpeed">Mouse Speed: 0 px/s</p>
     <p id="moonPhase">Moon: --</p>
-    <p id="weather">Weather: Loading...</p>
+    <p id="weather">Weather: loading…</p>
+    <p id="screenSize">Screen: -- × --</p>
+    <p id="browser">Browser: --</p>
+    <p id="platform">Platform: --</p>
+    <p id="battery">Battery: --</p>
+    <p id="timezone">Timezone: --</p>
+    <p id="randomFact">Fun Fact: --</p>
+    <p id="backgroundColor">BG Color: --</p>
   </div>
 
 <script>
-  // —— password logic
-  function checkPassword() {
+  function checkPassword(){
     const pw = prompt("enter password");
-    if (pw === "coolandepic") {
-      alert("53450n 2 v3r7 500n");
-      document.getElementById("imageContainer").style.display = "block";
-    } else if (pw!==null) alert("TRY. AGAIN.");
+    if(pw==="coolandepic"){
+      alert("Access granted ✨"); 
+    } else if(pw!==null) alert("TRY. AGAIN.");
   }
 
-  // —— ratcatcher effects
+  // ratcatcher + boop + confetti
   const rat = document.getElementById('ratcatcher');
-  let boops = 0, boopTimes = [];
-
-  rat.addEventListener('click', e=> {
-    // boop sound/anim
+  let boops=0, boopTimes=[];
+  rat.addEventListener('click', e=>{
     new Audio('boop.mp3').play();
     rat.classList.add('boop');
-    rat.addEventListener('animationend', ()=> rat.classList.remove('boop'), {once:true});
+    rat.addEventListener('animationend',()=>rat.classList.remove('boop'),{once:true});
 
     // confetti
     for(let i=0;i<20;i++){
       const c=document.createElement('div');
       c.className='confetti';
-      c.style.left=`${e.clientX}px`;
-      c.style.top=`${e.clientY}px`;
-      c.style.setProperty('--x',`${(Math.random()-0.5)*300}px`);
-      c.style.setProperty('--y',`${(Math.random()-1)*300}px`);
-      c.style.setProperty('--color',['#FFC700','#FF0000','#00FF00','#0000FF','#FF00FF'][Math.floor(Math.random()*5)]);
+      Object.assign(c.style,{
+        left:`${e.clientX}px`, top:`${e.clientY}px`,
+        background:`hsl(${Math.random()*360},80%,60%)`,
+        width:'6px', height:'6px'
+      });
+      const dx=(Math.random()-0.5)*200, dy=(Math.random()-1)*200;
+      c.animate([
+        { transform:'translate(0,0) rotate(0deg)', opacity:1 },
+        { transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(.6)`, opacity:0 }
+      ],{ duration:1500, easing:'ease-out' });
       document.body.appendChild(c);
-      setTimeout(()=>c.remove(),1500);
+      setTimeout(()=>c.remove(),1600);
     }
 
-    // boop counter
     boops++;
     boopTimes.push(Date.now());
     document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
@@ -125,102 +110,156 @@
   // hover particles
   let pInt;
   function makeParticle(){
-    const rect=rat.getBoundingClientRect();
-    const x=rect.left+Math.random()*rect.width;
-    const y=rect.top+Math.random()*rect.height;
-    const p=document.createElement('div');
-    p.className='particle';
-    p.style.left=`${x}px`; p.style.top=`${y}px`;
-    p.style.setProperty('--x',`${(Math.random()-0.5)*30}px`);
-    p.style.setProperty('--y',`${(Math.random()-0.5)*30}px`);
+    const r=rat.getBoundingClientRect();
+    const x=r.left+Math.random()*r.width, y=r.top+Math.random()*r.height;
+    const p=document.createElement('div'); p.className='particle';
+    Object.assign(p.style,{
+      left:`${x}px`, top:`${y}px`,
+      background:'#ddd', width:'5px', height:'5px'
+    });
+    const px=(Math.random()-0.5)*40, py=(Math.random()-0.5)*40;
+    p.animate([
+      { transform:'translate(0,0)', opacity:1 },
+      { transform:`translate(${px}px,${py}px)`, opacity:0 }
+    ],{ duration:800, easing:'ease-out' });
     document.body.appendChild(p);
-    setTimeout(()=>p.remove(),1000);
+    setTimeout(()=>p.remove(),900);
   }
-  rat.addEventListener('mouseenter',()=> pInt=setInterval(makeParticle,200));
-  rat.addEventListener('mouseleave',()=> clearInterval(pInt));
+  rat.addEventListener('mouseenter',()=>pInt=setInterval(makeParticle,150));
+  rat.addEventListener('mouseleave',()=>clearInterval(pInt));
 
-
-  // —— local time & time on page
+  // info updates
+  // Local time
   setInterval(()=>{
-    const now=new Date();
     document.getElementById('localTime').textContent =
-      'Local Time: '+now.toLocaleTimeString();
+      'Local Time: '+new Date().toLocaleTimeString();
   },1000);
 
-  let secs=0;
+  // Time on page
+  let seconds=0;
   setInterval(()=>{
-    secs++;
-    document.getElementById('timeOnPage').textContent = `Time on Page: ${secs}s`;
+    seconds++;
+    document.getElementById('timeOnPage').textContent = `Time on Page: ${seconds}s`;
   },1000);
 
-
-  // —— mouse pos & speed
-  let lastMouse={x:0,y:0, t:Date.now()}, speed=0;
+  // Mouse pos & speed
+  let last={x:0,y:0,t:Date.now()};
   document.addEventListener('mousemove',e=>{
     document.getElementById('mousePos').textContent =
       `Mouse X,Y: ${e.clientX}, ${e.clientY}`;
-
-    const now=Date.now(), dt=(now-lastMouse.t)/1000;
-    const dx=e.clientX-lastMouse.x, dy=e.clientY-lastMouse.y;
-    speed = dt>0 ? Math.hypot(dx,dy)/dt : 0;
-    lastMouse={x:e.clientX,y:e.clientY,t:now};
-    document.getElementById('mouseSpeed').textContent =
-      `Mouse Speed: ${speed.toFixed(1)} px/s`;
+    const now=Date.now(), dt=(now-last.t)/1000;
+    const dist=Math.hypot(e.clientX-last.x,e.clientY-last.y);
+    const speed= dt?Math.round(dist/dt):0;
+    document.getElementById('mouseSpeed').textContent = `Mouse Speed: ${speed} px/s`;
+    last={x:e.clientX,y:e.clientY,t:now};
   });
 
-
-  // —— BPS (boops per second), updated every 500ms
+  // BPS
   setInterval(()=>{
-    const cutoff = Date.now()-1000;
-    boopTimes = boopTimes.filter(ts => ts>cutoff);
-    const bps = boopTimes.length;
-    document.getElementById('bps').textContent = `BPS: ${bps.toFixed(2)}`;
+    const cutoff=Date.now()-1000;
+    boopTimes=boopTimes.filter(ts=>ts>cutoff);
+    document.getElementById('bps').textContent =
+      `BPS: ${boopTimes.length.toFixed(2)}`;
   },500);
 
-
-  // —— moon phase
+  // Moon phase
   (function updMoon(){
-    const d=new Date(), m=29.53058867,
+    const d=new Date(), m=29.5306,
           nm=new Date(2000,0,6,18,14),
-          days=((d-nm)/864e5)%m, phase=days/m;
+          phase=((d-nm)/864e5)%m/m;
     let text='Moon: ';
-    if(phase<0.03||phase>0.97) text+='New 🌑';
-    else if(phase<0.22) text+='Waxing C 🌒';
-    else if(phase<0.28) text+='First Q 🌓';
-    else if(phase<0.47) text+='Waxing G 🌔';
-    else if(phase<0.53) text+='Full 🌕';
-    else if(phase<0.72) text+='Waning G 🌖';
-    else if(phase<0.78) text+='Last Q 🌗';
+    if(phase<.03||phase>.97) text+='New 🌑';
+    else if(phase<.22) text+='Waxing C 🌒';
+    else if(phase<.28) text+='First Q 🌓';
+    else if(phase<.47) text+='Waxing G 🌔';
+    else if(phase<.53) text+='Full 🌕';
+    else if(phase<.72) text+='Waning G 🌖';
+    else if(phase<.78) text+='Last Q 🌗';
     else text+='Waning C 🌘';
     document.getElementById('moonPhase').textContent = text;
     setTimeout(updMoon,60000);
   })();
 
+  // Screen size
+  function updScreen(){
+    document.getElementById('screenSize').textContent =
+      `Screen: ${window.innerWidth}×${window.innerHeight}`;
+  }
+  window.addEventListener('resize',updScreen);
+  updScreen();
 
-  // —— weather via geolocation
-  (async function(){
+  // Browser & platform
+  document.getElementById('browser').textContent =
+    `Browser: ${navigator.appName} (${navigator.userAgent.match(/\(([^)]+)\)/)?.[1]||'?'})`;
+  document.getElementById('platform').textContent =
+    `Platform: ${navigator.platform}`;
+
+  // Timezone
+  document.getElementById('timezone').textContent =
+    `Timezone: UTC${-new Date().getTimezoneOffset()/60}`;
+
+  // Battery status
+  if(navigator.getBattery){
+    navigator.getBattery().then(b=>{
+      function updBat(){
+        document.getElementById('battery').textContent =
+          `Battery: ${(b.level*100).toFixed(0)}% ${b.charging? '🔌':''}`;
+      }
+      b.addEventListener('levelchange', updBat);
+      b.addEventListener('chargingchange', updBat);
+      updBat();
+    });
+  } else {
+    document.getElementById('battery').textContent = 'Battery: n/a';
+  }
+
+  // Random fact
+  const facts=[
+    "Bananas are berries, but strawberries aren’t!",
+    "Honey never spoils.",
+    "Octopuses have three hearts.",
+    "You can hear rhubarb grow.",
+    "A day on Venus is longer than a year."
+  ];
+  function updFact(){
+    document.getElementById('randomFact').textContent =
+      `Fun Fact: ${facts[Math.floor(Math.random()*facts.length)]}`;
+  }
+  updFact();
+  setInterval(updFact,15000);
+
+  // Weather (user location)
+  (async()=>{
     const el=document.getElementById('weather');
-    try {
-      const pos = await new Promise((res,rej)=>
+    try{
+      const pos=await new Promise((r,j)=>
         navigator.geolocation
-          ? navigator.geolocation.getCurrentPosition(res,rej)
-          : rej('no geo')
+          ? navigator.geolocation.getCurrentPosition(r,j)
+          : j()
       );
-      const {latitude:lat,longitude:lon} = pos.coords;
-      const key = 'c0bdf03da33984e173d3d84c32e220ba';
-      const resp = await fetch(
+      const {latitude:lat,longitude:lon}=pos.coords;
+      const key='c0bdf03da33984e173d3d84c32e220ba';
+      const res=await fetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}`+
         `&units=metric&appid=${key}`
       );
-      if(!resp.ok) throw '';
-      const d = await resp.json();
-      el.textContent = 
+      const d=await res.json();
+      el.textContent =
         `Weather in ${d.name}: ${d.weather[0].description}, ${d.main.temp.toFixed(1)}°C`;
-    } catch {
-      el.textContent = 'Weather: unable to fetch';
+    }catch{
+      el.textContent='Weather: unavailable';
     }
   })();
 
+  // Background color cycle (slow)
+  let hue=0;
+  setInterval(()=>{
+    hue=(hue+0.2)%360;
+    document.body.style.background=`hsl(${hue},30%,95%)`;
+    document.getElementById('backgroundColor').textContent =
+      `BG Color: hsl(${Math.round(hue)},30%,95%)`;
+  },100);
 </script>
+
 </body>
 </html>
