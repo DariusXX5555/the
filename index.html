@@ -1,75 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hows the wheater? :)</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hows the wheater? :)</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 50px;
+    }
+    #imageContainer {
+        display: none;
+        margin-top: 20px;
+    }
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    .button-container {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    /* Continuous spin */
+    .stretch-flip {
+        width: 50px;
+        height: 50px;
+        animation: spin 2s linear infinite;
+        cursor: pointer;
+        display: inline-block;
+        user-select: none;
+    }
+
+    /* Boop animation (scale + rotate) */
+    .boop {
+        animation: boopAnim 0.2s ease forwards;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
         }
-        #imageContainer {
-            display: none;
-            margin-top: 20px;
+        100% {
+            transform: rotate(360deg);
         }
-        img {
-            max-width: 100%;
-            height: auto;
+    }
+
+    @keyframes boopAnim {
+        0% {
+            transform: rotate(0deg) scale(1);
         }
-        .button-container {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+        50% {
+            transform: rotate(-15deg) scale(1.2);
         }
-        .stretch-flip {
-            width: 50px;
-            height: 50px;
-            animation: spin 2s linear infinite;
-            cursor: pointer;
-            display: inline-block;
-            user-select: none;
-            transition: transform 0.1s ease;
+        100% {
+            transform: rotate(0deg) scale(1);
         }
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        /* Boop animation */
-        .boop {
-            animation: boopAnim 0.2s ease forwards;
-        }
-        @keyframes boopAnim {
-            0% {
-                transform: rotate(0deg) scale(1);
-            }
-            50% {
-                transform: rotate(-15deg) scale(1.2);
-            }
-            100% {
-                transform: rotate(0deg) scale(1);
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <h1>Darius cool website because why not. (defenetly not related to season 2)</h1>
 
     <div class="button-container">
         <button onclick="checkPassword()">Enter Password</button>
-        <img id="ratcatcher" src="ratcatcher.jpg" alt="Ratcatcher" class="stretch-flip" />
+        <img src="ratcatcher.jpg" alt="Ratcatcher" class="stretch-flip" id="ratcatcher" />
     </div>
 
     <div id="imageContainer">
         <img src="Screenshot 2025-05-13 224508.png" alt="Hidden Image" />
     </div>
-
-    <audio id="boopSound" src="boop.mp3" preload="auto"></audio>
 
     <script>
         function checkPassword() {
@@ -84,17 +87,17 @@
         }
 
         const ratcatcher = document.getElementById('ratcatcher');
-        const boopSound = document.getElementById('boopSound');
+        const boopSoundSrc = "boop.mp3";
 
         ratcatcher.addEventListener('click', () => {
-            // Play the boop sound
-            boopSound.currentTime = 0;
-            boopSound.play();
+            // Play overlapping boop sound
+            const sound = new Audio(boopSoundSrc);
+            sound.play();
 
             // Add boop animation class
             ratcatcher.classList.add('boop');
 
-            // Remove class after animation ends so it can be triggered again
+            // Remove boop class after animation so it can be triggered again
             ratcatcher.addEventListener('animationend', () => {
                 ratcatcher.classList.remove('boop');
             }, { once: true });
