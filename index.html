@@ -4,88 +4,281 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>How's your weather? :)</title>
-<link rel="stylesheet" href="style.css" />
+<style>
+  body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+  }
+
+  #imageContainer {
+      margin-top: 20px;
+  }
+
+  img {
+      max-width: 100%;
+      height: auto;
+  }
+
+  .button-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+  }
+
+  /* Continuous spin */
+  .stretch-flip {
+      width: 50px;
+      height: 50px;
+      animation: spin 2s linear infinite;
+      cursor: pointer;
+      display: inline-block;
+      user-select: none;
+      position: relative; /* needed for particles inside */
+  }
+
+  /* Boop animation (scale + rotate) */
+  .boop {
+      animation: boopAnim 0.2s ease forwards;
+  }
+
+  @keyframes spin {
+      0% {
+          transform: rotate(0deg);
+      }
+      100% {
+          transform: rotate(360deg);
+      }
+  }
+
+  @keyframes boopAnim {
+      0% {
+          transform: rotate(0deg) scale(1);
+      }
+      50% {
+          transform: rotate(-15deg) scale(1.2);
+      }
+      100% {
+          transform: rotate(0deg) scale(1);
+      }
+  }
+
+  /* Particle style for hover */
+  .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #eee;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particleMove 1s forwards;
+      transform: translate(0, 0);
+  }
+
+  @keyframes particleMove {
+      to {
+          transform: translate(var(--x), var(--y));
+          opacity: 0;
+      }
+  }
+
+  /* Confetti style for click */
+  .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background-color: var(--color);
+      pointer-events: none;
+      animation: confettiMove 1.5s forwards;
+      transform: translate(0, 0) rotate(0deg);
+  }
+
+  @keyframes confettiMove {
+      to {
+          transform: translate(var(--x), var(--y)) rotate(360deg);
+          opacity: 0;
+      }
+  }
+
+  /* Info Panel Style */
+  #infoPanel {
+      margin-top: 30px;
+      font-family: monospace;
+      color: #333;
+      line-height: 1.5em;
+  }
+</style>
 </head>
 <body>
-    <h1>Darius cool website because why not. (defenetly not related to season 2)</h1>
 
-    <div class="button-container">
-        <button onclick="checkPassword()">Enter Password</button>
-        <img src="ratcatcher.jpg" alt="Ratcatcher" class="stretch-flip" id="ratcatcher" />
-    </div>
+  <h1>Darius cool website because why not. (defenetly not related to season 2)</h1>
 
-    <div id="imageContainer" style="display:none;">
-        <img src="Screenshot 2025-05-13 224508.png" alt="Hidden Image" />
-    </div>
+  <div class="button-container">
+      <button onclick="checkPassword()">Enter Password</button>
+      <img src="ratcatcher.jpg" alt="Ratcatcher" class="stretch-flip" id="ratcatcher" />
+  </div>
 
-    <script>
-        function checkPassword() {
-            const correctPassword = "coolandepic";
-            const userPassword = prompt("enter password");
-            if (userPassword === correctPassword) {
-                alert("53450n 2 v3r7 500n (press ok)");
-                document.getElementById("imageContainer").style.display = "block";
-            } else if (userPassword !== null) {
-                alert("TRY. AGAIN.");
-            }
+  <div id="imageContainer" style="display:none;">
+      <img src="Screenshot 2025-05-13 224508.png" alt="Hidden Image" />
+  </div>
+
+  <!-- Info panel for weather, time, moon etc -->
+  <div id="infoPanel">
+    <p id="localTime">Local Time: --:--:--</p>
+    <p id="timeOnPage">Time on Page: 0 seconds</p>
+    <p id="boopsCount">Boops Given: 0</p>
+    <p id="moonPhase">Moon Phase: --</p>
+    <p id="weather">Weather: Loading...</p>
+  </div>
+
+<script>
+  // Password check
+  function checkPassword() {
+    const correctPassword = "coolandepic";
+    const userPassword = prompt("enter password");
+    if (userPassword === correctPassword) {
+      alert("53450n 2 v3r7 500n (press ok)");
+      document.getElementById("imageContainer").style.display = "block";
+    } else if (userPassword !== null) {
+      alert("TRY. AGAIN.");
+    }
+  }
+
+  // Ratcatcher particle effects
+  const ratcatcher = document.getElementById('ratcatcher');
+
+  function createParticle(x, y) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+    particle.style.setProperty('--x', `${(Math.random() - 0.5) * 30}px`);
+    particle.style.setProperty('--y', `${(Math.random() - 0.5) * 30}px`);
+    ratcatcher.appendChild(particle);
+    setTimeout(() => particle.remove(), 1000);
+  }
+
+  let particleInterval;
+
+  ratcatcher.addEventListener('mouseenter', () => {
+    particleInterval = setInterval(() => {
+      const rect = ratcatcher.getBoundingClientRect();
+      const x = Math.random() * rect.width;
+      const y = Math.random() * rect.height;
+      createParticle(x, y);
+    }, 200);
+  });
+
+  ratcatcher.addEventListener('mouseleave', () => {
+    clearInterval(particleInterval);
+  });
+
+  // Confetti on click
+  function createConfetti(x, y) {
+    const colors = ['#FFC700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'];
+    for (let i = 0; i < 20; i++) {
+      const confetti = document.createElement('div');
+      confetti.classList.add('confetti');
+      confetti.style.left = `${x}px`;
+      confetti.style.top = `${y}px`;
+      confetti.style.setProperty('--x', `${(Math.random() - 0.5) * 300}px`);
+      confetti.style.setProperty('--y', `${(Math.random() - 1) * 300}px`);
+      confetti.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 1500);
+    }
+  }
+
+  let boops = 0;
+
+  ratcatcher.addEventListener('click', (e) => {
+    const x = e.clientX;
+    const y = e.clientY;
+    createConfetti(x, y);
+
+    const sound = new Audio('boop.mp3');
+    sound.play();
+
+    ratcatcher.classList.add('boop');
+    ratcatcher.addEventListener('animationend', () => {
+      ratcatcher.classList.remove('boop');
+    }, { once: true });
+
+    boops++;
+    document.getElementById('boopsCount').textContent = `Boops Given: ${boops}`;
+  });
+
+  // Local time every second
+  function updateLocalTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    document.getElementById('localTime').textContent = 'Local Time: ' + timeString;
+  }
+  setInterval(updateLocalTime, 1000);
+  updateLocalTime();
+
+  // Time on page counter
+  let secondsOnPage = 0;
+  setInterval(() => {
+    secondsOnPage++;
+    document.getElementById('timeOnPage').textContent = `Time on Page: ${secondsOnPage} second${secondsOnPage === 1 ? '' : 's'}`;
+  }, 1000);
+
+  // Moon phase calculation
+  function getMoonPhase() {
+    const today = new Date();
+    const synodicMonth = 29.53058867; // lunar cycle in days
+    const newMoon = new Date(2000, 0, 6, 18, 14); // known new moon date
+    const daysSinceNewMoon = (today - newMoon) / 86400000;
+    const phase = (daysSinceNewMoon % synodicMonth) / synodicMonth;
+
+    if (phase < 0.03 || phase > 0.97) return 'New Moon 🌑';
+    else if (phase < 0.22) return 'Waxing Crescent 🌒';
+    else if (phase < 0.28) return 'First Quarter 🌓';
+    else if (phase < 0.47) return 'Waxing Gibbous 🌔';
+    else if (phase < 0.53) return 'Full Moon 🌕';
+    else if (phase < 0.72) return 'Waning Gibbous 🌖';
+    else if (phase < 0.78) return 'Last Quarter 🌗';
+    else return 'Waning Crescent 🌘';
+  }
+
+  function updateMoonPhase() {
+    document.getElementById('moonPhase').textContent = 'Moon Phase: ' + getMoonPhase();
+  }
+  updateMoonPhase();
+
+  // Fetch weather based on user's local city
+  async function fetchWeather() {
+    try {
+      const pos = await new Promise((res, rej) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(res, rej);
+        } else {
+          rej('Geolocation not supported');
         }
+      });
 
-        const ratcatcher = document.getElementById('ratcatcher');
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
 
-        function createParticle(x, y) {
-          const particle = document.createElement('div');
-          particle.classList.add('particle');
-          particle.style.left = `${x}px`;
-          particle.style.top = `${y}px`;
-          particle.style.setProperty('--x', `${(Math.random() - 0.5) * 30}px`);
-          particle.style.setProperty('--y', `${(Math.random() - 0.5) * 30}px`);
-          ratcatcher.appendChild(particle);
-          setTimeout(() => particle.remove(), 1000);
-        }
+      const apiKey = 'c0bdf03da33984e173d3d84c32e220ba';
 
-        let particleInterval;
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+      if (!response.ok) throw new Error('Network response was not ok');
 
-        ratcatcher.addEventListener('mouseenter', () => {
-          particleInterval = setInterval(() => {
-            const rect = ratcatcher.getBoundingClientRect();
-            const x = Math.random() * rect.width;
-            const y = Math.random() * rect.height;
-            createParticle(x, y);
-          }, 200);
-        });
+      const data = await response.json();
 
-        ratcatcher.addEventListener('mouseleave', () => {
-          clearInterval(particleInterval);
-        });
+      document.getElementById('weather').textContent = `Weather in ${data.name}: ${data.weather[0].description}, ${data.main.temp}°C`;
+    } catch (error) {
+      document.getElementById('weather').textContent = 'Weather: Unable to fetch data';
+      console.error(error);
+    }
+  }
 
-        function createConfetti(x, y) {
-          const colors = ['#FFC700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'];
-          for (let i = 0; i < 20; i++) {
-            const confetti = document.createElement('div');
-            confetti.classList.add('confetti');
-            confetti.style.left = `${x}px`;
-            confetti.style.top = `${y}px`;
-            confetti.style.setProperty('--x', `${(Math.random() - 0.5) * 300}px`);
-            confetti.style.setProperty('--y', `${(Math.random() - 1) * 300}px`);
-            confetti.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
-            document.body.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 1500);
-          }
-        }
+  fetchWeather();
 
-        ratcatcher.addEventListener('click', (e) => {
-          const x = e.clientX;
-          const y = e.clientY;
-          createConfetti(x, y);
+</script>
 
-          const sound = new Audio('boop.mp3');
-          sound.play();
-
-          ratcatcher.classList.add('boop');
-          ratcatcher.addEventListener('animationend', () => {
-            ratcatcher.classList.remove('boop');
-          }, { once: true });
-        });
-    </script>
 </body>
 </html>
