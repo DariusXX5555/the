@@ -1,1 +1,95 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 50px;
+}
 
+#imageContainer {
+    margin-top: 20px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.button-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Continuous spin */
+.stretch-flip {
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    cursor: pointer;
+    display: inline-block;
+    user-select: none;
+    position: relative; /* needed for particles inside */
+}
+
+/* Boop animation (scale + rotate) */
+.boop {
+    animation: boopAnim 0.2s ease forwards;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes boopAnim {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(-15deg) scale(1.2);
+    }
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+/* Particle style for hover */
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #eee;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleMove 1s forwards;
+    transform: translate(0, 0);
+}
+
+@keyframes particleMove {
+    to {
+        transform: translate(var(--x), var(--y));
+        opacity: 0;
+    }
+}
+
+/* Confetti style for click */
+.confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--color);
+    pointer-events: none;
+    animation: confettiMove 1.5s forwards;
+    transform: translate(0, 0) rotate(0deg);
+}
+
+@keyframes confettiMove {
+    to {
+        transform: translate(var(--x), var(--y)) rotate(360deg);
+        opacity: 0;
+    }
+}
