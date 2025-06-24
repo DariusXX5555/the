@@ -3,64 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hows the wheater? :)</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin: 50px;
-    }
-    #imageContainer {
-        display: none;
-        margin-top: 20px;
-    }
-    img {
-        max-width: 100%;
-        height: auto;
-    }
-    .button-container {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        justify-content: center;
-    }
-
-    /* Continuous spin */
-    .stretch-flip {
-        width: 50px;
-        height: 50px;
-        animation: spin 2s linear infinite;
-        cursor: pointer;
-        display: inline-block;
-        user-select: none;
-    }
-
-    /* Boop animation (scale + rotate) */
-    .boop {
-        animation: boopAnim 0.2s ease forwards;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    @keyframes boopAnim {
-        0% {
-            transform: rotate(0deg) scale(1);
-        }
-        50% {
-            transform: rotate(-15deg) scale(1.2);
-        }
-        100% {
-            transform: rotate(0deg) scale(1);
-        }
-    }
-</style>
+<title>Darius cool website because why not</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
     <h1>Darius cool website because why not. (defenetly not related to season 2)</h1>
@@ -70,7 +14,7 @@
         <img src="ratcatcher.jpg" alt="Ratcatcher" class="stretch-flip" id="ratcatcher" />
     </div>
 
-    <div id="imageContainer">
+    <div id="imageContainer" style="display:none;">
         <img src="Screenshot 2025-05-13 224508.png" alt="Hidden Image" />
     </div>
 
@@ -87,16 +31,60 @@
         }
 
         const ratcatcher = document.getElementById('ratcatcher');
-        const boopSoundSrc = "boop.mp3";
 
-        ratcatcher.addEventListener('click', () => {
-            const sound = new Audio(boopSoundSrc);
-            sound.play();
-            ratcatcher.classList.add('boop');
+        function createParticle(x, y) {
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          particle.style.left = `${x}px`;
+          particle.style.top = `${y}px`;
+          particle.style.setProperty('--x', `${(Math.random() - 0.5) * 30}px`);
+          particle.style.setProperty('--y', `${(Math.random() - 0.5) * 30}px`);
+          ratcatcher.appendChild(particle);
+          setTimeout(() => particle.remove(), 1000);
+        }
+
+        let particleInterval;
+
+        ratcatcher.addEventListener('mouseenter', () => {
+          particleInterval = setInterval(() => {
+            const rect = ratcatcher.getBoundingClientRect();
+            const x = Math.random() * rect.width;
+            const y = Math.random() * rect.height;
+            createParticle(x, y);
+          }, 200);
         });
 
-        ratcatcher.addEventListener('animationend', () => {
+        ratcatcher.addEventListener('mouseleave', () => {
+          clearInterval(particleInterval);
+        });
+
+        function createConfetti(x, y) {
+          const colors = ['#FFC700', '#FF0000', '#00FF00', '#0000FF', '#FF00FF'];
+          for (let i = 0; i < 20; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = `${x}px`;
+            confetti.style.top = `${y}px`;
+            confetti.style.setProperty('--x', `${(Math.random() - 0.5) * 300}px`);
+            confetti.style.setProperty('--y', `${(Math.random() - 1) * 300}px`);
+            confetti.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 1500);
+          }
+        }
+
+        ratcatcher.addEventListener('click', (e) => {
+          const x = e.clientX;
+          const y = e.clientY;
+          createConfetti(x, y);
+
+          const sound = new Audio('boop.mp3');
+          sound.play();
+
+          ratcatcher.classList.add('boop');
+          ratcatcher.addEventListener('animationend', () => {
             ratcatcher.classList.remove('boop');
+          }, { once: true });
         });
     </script>
 </body>
