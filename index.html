@@ -90,17 +90,13 @@
         const boopSoundSrc = "boop.mp3";
 
         ratcatcher.addEventListener('click', () => {
-            // Play overlapping boop sound
             const sound = new Audio(boopSoundSrc);
             sound.play();
-
-            // Add boop animation class
             ratcatcher.classList.add('boop');
+        });
 
-            // Remove boop class after animation so it can be triggered again
-            ratcatcher.addEventListener('animationend', () => {
-                ratcatcher.classList.remove('boop');
-            }, { once: true });
+        ratcatcher.addEventListener('animationend', () => {
+            ratcatcher.classList.remove('boop');
         });
     </script>
 </body>
