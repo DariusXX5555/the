@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Hows the wheater? :)</title>
     <style>
         body {
@@ -24,43 +24,37 @@
             gap: 10px;
         }
         .stretch-flip {
-            width: 0px;
+            width: 50px;
             height: 50px;
-            animation: flipStretch 1s ease-out infinite alternate;
+            animation: spin 2s linear infinite;
         }
 
-        @keyframes flipStretch {
-            0% {
-                width: 0px;
-                transform: scaleX(1);
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
             }
-            50% {
-                width: 50px;
-                transform: scaleX(1);
-            }
-            100% {
-                width: 0px;
-                transform: scaleX(-1);
+            to {
+                transform: rotate(360deg);
             }
         }
     </style>
 </head>
 <body>
-    <h1>Not much time is left, IT is approaching, you must prepare, it will be way more unpredictable that the 1st edition. WHILE YOU STILL CAN. :)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))</h1>
+    <h1>Darius cool website because why not. (defenetly not related to season 2)</h1>
 
     <div class="button-container">
         <button onclick="checkPassword()">Enter Password</button>
-        <img src="ratcatcher.jpg" alt="Ratcatcher" class="stretch-flip">
+        <img src="ratcatcher.jpg" alt="Ratcatcher" class="stretch-flip" />
     </div>
 
     <div id="imageContainer">
-        <img src="Screenshot 2025-05-13 224508.png" alt="Hidden Image">
+        <img src="Screenshot 2025-05-13 224508.png" alt="Hidden Image" />
     </div>
 
     <script>
         function checkPassword() {
-            const correctPassword = "tekk32b64/128^eMC^&s'e]]as[[o*#n2:S;;oo;4N/a!a43nr.3.6,12.2";
-            const userPassword = prompt("3nter password");
+            const correctPassword = "coolandepic";
+            const userPassword = prompt("enter password");
             if (userPassword === correctPassword) {
                 alert("53450n 2 v3r7 500n (press ok)");
                 document.getElementById("imageContainer").style.display = "block";
