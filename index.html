@@ -86,6 +86,10 @@
   document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
   let boopTimes = [];
 
+  // ————— anti‑autoclicker vars
+  let lastClickTime = 0;
+  let clickIntervals = [];
+
   // ————— password check
   function checkPassword(){
     const pw = prompt("enter password");
@@ -117,7 +121,28 @@
 
   const rat = document.getElementById('ratcatcher');
 
-  rat.addEventListener('click', e=>{
+  rat.addEventListener('click', e => {
+    const now = Date.now();
+
+    // ————— autoclicker check
+    if (lastClickTime) {
+      const interval = now - lastClickTime;
+      clickIntervals.push(interval);
+      if (clickIntervals.length > 5) clickIntervals.shift();
+
+      if (
+        clickIntervals.length === 5 &&
+        clickIntervals.every(i => i === clickIntervals[0])
+      ) {
+        alert("autoclicker detecting, unleashing protocol XI3");
+        rat.remove();
+        return;
+      }
+    }
+    lastClickTime = now;
+
+    // ————— existing boop logic
+
     new Audio('boop.mp3').play();
     rat.classList.add('boop');
     rat.addEventListener('animationend',()=>rat.classList.remove('boop'),{once:true});
@@ -141,7 +166,7 @@
 
     // update counts
     boops++;
-    boopTimes.push(Date.now());
+    boopTimes.push(now);
     document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
     localStorage.setItem(`dash_boops_${username}`, boops);
     saveLeader();
@@ -188,11 +213,11 @@
   let last={x:0,y:0,t:Date.now()};
   document.addEventListener('mousemove', e=>{
     info('mousePos').textContent = `Mouse X,Y: ${e.clientX}, ${e.clientY}`;
-    const now = Date.now(), dt=(now-last.t)/1000;
+    const now2 = Date.now(), dt=(now2-last.t)/1000;
     const dist=Math.hypot(e.clientX-last.x, e.clientY-last.y);
     const speed = dt ? Math.round(dist/dt) : 0;
     info('mouseSpeed').textContent = `Mouse Speed: ${speed} px/s`;
-    last = {x:e.clientX, y:e.clientY, t:now};
+    last = {x:e.clientX, y:e.clientY, t:now2};
   });
 
   // ————— BPS
@@ -272,7 +297,7 @@
   }
   updFact(); setInterval(updFact,15000);
 
-  // ————— Weather (fallback to city prompt if geo fails)
+  // ————— Weather
   (async()=>{
     const el=info('weather');
     let lat,lon;
