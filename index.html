@@ -1,39 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>How's your weather? :)</title>
-<style>
-  body {
-    font-family: monospace;
-    background: #fafafa;
-    color: #222;
-    text-align: center;
-    padding: 40px;
-    transition: background 1s;
-  }
-  h1 { margin-bottom: 30px; }
-  .button-container { margin-bottom: 20px; }
-  #ratcatcher {
-    width: 60px; height: 60px;
-    animation: spin 3s linear infinite;
-    cursor: pointer; position: relative;
-    display: inline-block; vertical-align: middle;
-  }
-  @keyframes spin { to { transform: rotate(360deg) } }
-  .boop { animation: boopAnim .2s ease forwards }
-  @keyframes boopAnim { 50% { transform: scale(1.3) rotate(-20deg) } }
-  .confetti, .particle {
-    position: absolute; pointer-events: none; will-change: transform, opacity;
-  }
-  #infoPanel {
-    display:inline-block; text-align:left; margin-top:0; line-height:1.4em;
-  }
-  #infoPanel p { margin:4px 0; }
-  table { margin: 10px auto; font-size:0.9em; border-collapse: collapse; }
-  table td, table th { border:1px solid #ccc; padding:4px 8px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How's your weather? :)</title>
+  <link rel="icon" type="image/jpeg" href="">
+  <style>
+    body {
+      font-family: monospace;
+      background: #fafafa;
+      color: #222;
+      text-align: center;
+      padding: 40px;
+      transition: background 1s;
+    }
+    h1 { margin-bottom: 30px; }
+    .button-container { margin-bottom: 20px; }
+    #ratcatcher {
+      width: 60px; height: 60px;
+      animation: spin 3s linear infinite;
+      cursor: pointer; position: relative;
+      display: inline-block; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg) } }
+    .boop { animation: boopAnim .2s ease forwards }
+    @keyframes boopAnim { 50% { transform: scale(1.3) rotate(-20deg) } }
+    .confetti, .particle {
+      position: absolute; pointer-events: none; will-change: transform, opacity;
+    }
+    #infoPanel { display:inline-block; text-align:left; margin-top:0; line-height:1.4em; }
+    #infoPanel p { margin:4px 0; }
+    table { margin: 10px auto; font-size:0.9em; border-collapse: collapse; }
+    table td, table th { border:1px solid #ccc; padding:4px 8px; }
+  </style>
 </head>
 <body>
 
@@ -57,8 +56,6 @@
     <p id="browser">Browser: --</p>
     <p id="platform">Platform: --</p>
     <p id="language">Language: --</p>
-    <p id="cpuCores">CPU Cores: --</p>
-    <p id="memory">RAM (GB): --</p>
     <p id="timezone">Timezone: --</p>
     <p id="online">Online: --</p>
     <p id="battery">Battery: --</p>
@@ -73,268 +70,215 @@
     <tbody></tbody>
   </table>
 
-<script>
-  // ————— prompt for username
-  let username = localStorage.getItem('dash_username');
-  if(!username) {
-    username = prompt("Pick a username for the Boop Leaderboard:") || "Anon";
-    localStorage.setItem('dash_username', username);
-  }
-
-  // ————— load saved boops for this user
-  let boops = parseInt(localStorage.getItem(`dash_boops_${username}`), 10) || 0;
-  document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
-  let boopTimes = [];
-
-  // ————— anti‑autoclicker vars
-  let lastClickTime = 0;
-  let clickIntervals = [];
-
-  // ————— password check
-  function checkPassword(){
-    const pw = prompt("enter password");
-    if(pw==="coolandepic"){ alert("Access granted ✨"); }
-    else if(pw!==null) alert("TRY. AGAIN.");
-  }
-
-  // ————— leaderboard functions
-  function saveLeader() {
-    const board = JSON.parse(localStorage.getItem('dash_leaderboard')||'[]');
-    const filtered = board.filter(e=>e.user!==username);
-    filtered.push({user:username,boops});
-    filtered.sort((a,b)=>b.boops-a.boops);
-    localStorage.setItem('dash_leaderboard', JSON.stringify(filtered.slice(0,10)));
-    renderLeaderboard();
-  }
-
-  function renderLeaderboard() {
-    const body = document.querySelector('#leaderboard tbody');
-    body.innerHTML = '';
-    JSON.parse(localStorage.getItem('dash_leaderboard')||'[]')
-      .forEach(e=>{
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${e.user}</td><td>${e.boops}</td>`;
-        body.appendChild(row);
+  <!-- Konami Code Handler -->
+  <script>
+    (function(){
+      const KONAMI = [38,38,40,40,37,39,37,39,66,65];
+      let index = 0;
+      document.addEventListener('keydown', e => {
+        if (e.keyCode === KONAMI[index]) {
+          index++;
+          if (index === KONAMI.length) {
+            triggerEasterEgg();
+            index = 0;
+          }
+        } else {
+          index = 0;
+        }
       });
-  }
-  renderLeaderboard();
-
-  const rat = document.getElementById('ratcatcher');
-
-  rat.addEventListener('click', e => {
-    const now = Date.now();
-
-    // ————— autoclicker check
-    if (lastClickTime) {
-      const interval = now - lastClickTime;
-      clickIntervals.push(interval);
-      if (clickIntervals.length > 5) clickIntervals.shift();
-
-      if (
-        clickIntervals.length === 5 &&
-        clickIntervals.every(i => i === clickIntervals[0])
-      ) {
-        alert("autoclicker detecting, unleashing protocol XI3");
-        rat.remove();
-        return;
+      function triggerEasterEgg() {
+        const img = 'он есть он.jpg';
+        // Change title
+        document.title = img;
+        // Change favicon
+        let link = document.querySelector('link[rel="icon"]');
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          document.head.appendChild(link);
+        }
+        link.href = img;
+        // Hide dashboard
+        document.body.innerHTML = '';
+        // Fullscreen background
+        document.body.style.cssText = `margin:0; padding:0; background:url('${img}') no-repeat center center fixed; background-size:cover; height:100vh; overflow:hidden;`;
+        // Centered image
+        const el = document.createElement('img');
+        el.src = img;
+        el.alt = img;
+        Object.assign(el.style, {
+          position: 'absolute',
+          top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          maxWidth: '100%', maxHeight: '100%'
+        });
+        document.body.appendChild(el);
       }
-    }
-    lastClickTime = now;
+    })();
+  </script>
 
-    // ————— existing boop logic
-
-    new Audio('boop.mp3').play();
-    rat.classList.add('boop');
-    rat.addEventListener('animationend',()=>rat.classList.remove('boop'),{once:true});
-
-    // confetti
-    for(let i=0;i<20;i++){
-      const c = document.createElement('div'); c.className='confetti';
-      Object.assign(c.style,{
-        left:`${e.clientX}px`, top:`${e.clientY}px`,
-        background:`hsl(${Math.random()*360},80%,60%)`,
-        width:'6px', height:'6px'
-      });
-      const dx=(Math.random()-0.5)*200, dy=(Math.random()-1)*200;
-      c.animate([
-        {transform:'translate(0,0) rotate(0deg)',opacity:1},
-        {transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(.6)`,opacity:0}
-      ],{duration:1500,easing:'ease-out'});
-      document.body.appendChild(c);
-      setTimeout(()=>c.remove(),1600);
+  <!-- Original Dashboard Script -->
+  <script>
+    // ————— prompt for username
+    let username = localStorage.getItem('dash_username');
+    if (!username) {
+      username = prompt("Pick a username for the Boop Leaderboard:") || "Anon";
+      localStorage.setItem('dash_username', username);
     }
 
-    // update counts
-    boops++;
-    boopTimes.push(now);
+    // ————— load saved boops for this user
+    let boops = parseInt(localStorage.getItem(`dash_boops_${username}`), 10) || 0;
     document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
-    localStorage.setItem(`dash_boops_${username}`, boops);
-    saveLeader();
-  });
+    let boopTimes = [];
 
-  // ————— hover particles
-  let pInt;
-  function makeParticle(){
-    const r = rat.getBoundingClientRect();
-    const x = r.left + Math.random()*r.width;
-    const y = r.top + Math.random()*r.height;
-    const p = document.createElement('div'); p.className='particle';
-    Object.assign(p.style,{
-      left:`${x}px`, top:`${y}px`,
-      background:'#ddd', width:'5px', height:'5px'
-    });
-    const px=(Math.random()-0.5)*40, py=(Math.random()-0.5)*40;
-    p.animate([
-      {transform:'translate(0,0)',opacity:1},
-      {transform:`translate(${px}px,${py}px)`,opacity:0}
-    ],{duration:800,easing:'ease-out'});
-    document.body.appendChild(p);
-    setTimeout(()=>p.remove(),900);
-  }
-  rat.addEventListener('mouseenter',()=>pInt=setInterval(makeParticle,150));
-  rat.addEventListener('mouseleave',()=>clearInterval(pInt));
+    // ————— anti‑autoclicker vars
+    let lastClickTime = 0;
+    let clickIntervals = [];
 
-  // ————— helpers
-  const info = id => document.getElementById(id);
+    // ————— password check
+    function checkPassword() {
+      const pw = prompt("enter password");
+      if (pw === "coolandepic") { alert("Access granted ✨"); }
+      else if (pw !== null) alert("TRY. AGAIN.");
+    }
 
-  // ————— Local time
-  setInterval(()=>{
-    info('localTime').textContent = 'Local Time: ' + new Date().toLocaleTimeString();
-  },1000);
+    // ————— leaderboard functions
+    function saveLeader() {
+      const board = JSON.parse(localStorage.getItem('dash_leaderboard') || '[]');
+      const filtered = board.filter(e => e.user !== username);
+      filtered.push({ user: username, boops });
+      filtered.sort((a, b) => b.boops - a.boops);
+      localStorage.setItem('dash_leaderboard', JSON.stringify(filtered.slice(0, 10)));
+      renderLeaderboard();
+    }
 
-  // ————— Time on page
-  let seconds = 0;
-  setInterval(()=>{
-    seconds++;
-    info('timeOnPage').textContent = `Time on Page: ${seconds}s`;
-  },1000);
+    function renderLeaderboard() {
+      const body = document.querySelector('#leaderboard tbody');
+      body.innerHTML = '';
+      JSON.parse(localStorage.getItem('dash_leaderboard') || '[]')
+        .forEach(e => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${e.user}</td><td>${e.boops}</td>`;
+          body.appendChild(row);
+        });
+    }
+    renderLeaderboard();
 
-  // ————— Mouse pos & speed
-  let last={x:0,y:0,t:Date.now()};
-  document.addEventListener('mousemove', e=>{
-    info('mousePos').textContent = `Mouse X,Y: ${e.clientX}, ${e.clientY}`;
-    const now2 = Date.now(), dt=(now2-last.t)/1000;
-    const dist=Math.hypot(e.clientX-last.x, e.clientY-last.y);
-    const speed = dt ? Math.round(dist/dt) : 0;
-    info('mouseSpeed').textContent = `Mouse Speed: ${speed} px/s`;
-    last = {x:e.clientX, y:e.clientY, t:now2};
-  });
-
-  // ————— BPS
-  setInterval(()=>{
-    const cutoff = Date.now()-1000;
-    boopTimes = boopTimes.filter(ts=>ts>cutoff);
-    info('bps').textContent = `BPS: ${boopTimes.length.toFixed(2)}`;
-  },500);
-
-  // ————— Moon phase
-  (function updMoon(){
-    const d=new Date(), m=29.5306,
-          nm=new Date(2000,0,6,18,14),
-          phase=((d-nm)/864e5)%m/m;
-    let t='Moon: ';
-    if(phase<.03||phase>.97) t+='New 🌑';
-    else if(phase<.22) t+='Waxing C 🌒';
-    else if(phase<.28) t+='First Q 🌓';
-    else if(phase<.47) t+='Waxing G 🌔';
-    else if(phase<.53) t+='Full 🌕';
-    else if(phase<.72) t+='Waning G 🌖';
-    else if(phase<.78) t+='Last Q 🌗';
-    else t+='Waning C 🌘';
-    info('moonPhase').textContent = t;
-    setTimeout(updMoon,60000);
-  })();
-
-  // ————— Screen size
-  function updScreen(){
-    info('screenSize').textContent = `Screen: ${innerWidth}×${innerHeight}`;
-  }
-  addEventListener('resize',updScreen);
-  updScreen();
-
-  // ————— Browser / platform / language
-  info('browser').textContent = `Browser: ${navigator.appName}`;
-  info('platform').textContent = `Platform: ${navigator.platform}`;
-  info('language').textContent = `Language: ${navigator.language}`;
-
-  // ————— Timezone
-  info('timezone').textContent = `Timezone: UTC${-new Date().getTimezoneOffset()/60}`;
-
-  // ————— Online status
-  function updOnline(){ info('online').textContent = `Online: ${navigator.onLine}`; }
-  addEventListener('online',updOnline);
-  addEventListener('offline',updOnline);
-  updOnline();
-
-  // ————— Battery
-  if(navigator.getBattery){
-    navigator.getBattery().then(b=>{
-      function updBat(){
-        const pct=(b.level*100).toFixed(0)+'%';
-        info('battery').textContent = `Battery: ${pct}${b.charging?' 🔌':''}`;
+    const rat = document.getElementById('ratcatcher');
+    rat.addEventListener('click', e => {
+      const now = Date.now();
+      if (lastClickTime) {
+        const interval = now - lastClickTime;
+        clickIntervals.push(interval);
+        if (clickIntervals.length > 5) clickIntervals.shift();
+        if (clickIntervals.length === 5 && clickIntervals.every(i => i === clickIntervals[0])) {
+          alert("autoclicker detecting, unleashing protocol XI3");
+          rat.remove();
+          return;
+        }
       }
-      b.addEventListener('levelchange',updBat);
-      b.addEventListener('chargingchange',updBat);
-      updBat();
+      lastClickTime = now;
+
+      new Audio('boop.mp3').play();
+      rat.classList.add('boop');
+      rat.addEventListener('animationend', () => rat.classList.remove('boop'), { once: true });
+
+      for (let i = 0; i < 20; i++) {
+        const c = document.createElement('div'); c.className = 'confetti';
+        Object.assign(c.style, {
+          left: `${e.clientX}px`, top: `${e.clientY}px`,
+          background: `hsl(${Math.random() * 360},80%,60%)`,
+          width: '6px', height: '6px'
+        });
+        const dx = (Math.random() - 0.5) * 200, dy = (Math.random() - 1) * 200;
+        c.animate([{ transform: 'translate(0,0) rotate(0deg)', opacity: 1 }, { transform: `translate(${dx}px,${dy}px) rotate(360deg) scale(.6)`, opacity: 0 }], { duration: 1500, easing: 'ease-out' });
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 1600);
+      }
+
+      boops++;
+      boopTimes.push(now);
+      document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
+      localStorage.setItem(`dash_boops_${username}`, boops);
+      saveLeader();
     });
-  } else info('battery').textContent = 'Battery: n/a';
 
-  // ————— Scroll Y
-  addEventListener('scroll',()=>{
-    info('scroll').textContent = `Scroll Y: ${scrollY.toFixed(0)}px`;
-  });
-
-  // ————— Random fact
-  const facts=[
-    "Honey never spoils.",
-    "Octopuses have three hearts.",
-    "Bananas are berries, but strawberries aren’t.",
-    "You can’t hum while holding your nose.",
-    "A group of flamingos is a flamboyance."
-  ];
-  function updFact(){
-    info('randomFact').textContent = `Fun Fact: ${facts[Math.floor(Math.random()*facts.length)]}`;
-  }
-  updFact(); setInterval(updFact,15000);
-
-  // ————— Weather
-  (async()=>{
-    const el=info('weather');
-    let lat,lon;
-    try{
-      const pos=await new Promise((r,j)=>
-        navigator.geolocation
-          ? navigator.geolocation.getCurrentPosition(r,j)
-          : j()
-      );
-      lat=pos.coords.latitude; lon=pos.coords.longitude;
-    }catch{
-      const city=prompt("Location failed. Enter city for weather:");
-      if(!city){ el.textContent="Weather: n/a"; return; }
-      window._wcity = city;
+    let pInt;
+    function makeParticle() {
+      const r = rat.getBoundingClientRect();
+      const x = r.left + Math.random() * r.width;
+      const y = r.top + Math.random() * r.height;
+      const p = document.createElement('div'); p.className = 'particle';
+      Object.assign(p.style, { left: `${x}px`, top: `${y}px`, background: '#ddd', width: '5px', height: '5px' });
+      const px = (Math.random() - 0.5) * 40, py = (Math.random() - 0.5) * 40;
+      p.animate([{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${px}px,${py}px)`, opacity: 0 }], { duration: 800, easing: 'ease-out' });
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 900);
     }
-    const key='c0bdf03da33984e173d3d84c32e220ba';
-    let url = lat
-      ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}`
-      : `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(window._wcity)}`;
-    url += `&units=metric&appid=${key}`;
-    try{
-      const d=await (await fetch(url)).json();
-      el.textContent =
-        `Weather in ${d.name}: ${d.weather[0].description}, ${d.main.temp.toFixed(1)}°C`;
-    }catch{
-      el.textContent='Weather: unavailable';
-    }
-  })();
+    rat.addEventListener('mouseenter', () => pInt = setInterval(makeParticle, 150));
+    rat.addEventListener('mouseleave', () => clearInterval(pInt));
 
-  // ————— BG color cycle
-  let hue=0;
-  setInterval(()=>{
-    hue=(hue+0.2)%360;
-    document.body.style.background = `hsl(${hue},30%,95%)`;
-    info('backgroundColor').textContent =
-      `BG Color: hsl(${Math.round(hue)},30%,95%)`;
-  },100);
-</script>
+    const info = id => document.getElementById(id);
+    setInterval(() => { info('localTime').textContent = 'Local Time: ' + new Date().toLocaleTimeString(); }, 1000);
+    let seconds = 0;
+    setInterval(() => { seconds++; info('timeOnPage').textContent = `Time on Page: ${seconds}s`; }, 1000);
+    let lastMove = { x: 0, y: 0, t: Date.now() };
+    document.addEventListener('mousemove', e => {
+      info('mousePos').textContent = `Mouse X,Y: ${e.clientX}, ${e.clientY}`;
+      const now2 = Date.now(), dt = (now2 - lastMove.t) / 1000;
+      const dist = Math.hypot(e.clientX - lastMove.x, e.clientY - lastMove.y);
+      const speed = dt ? Math.round(dist / dt) : 0;
+      info('mouseSpeed').textContent = `Mouse Speed: ${speed} px/s`;
+      lastMove = { x: e.clientX, y: e.clientY, t: now2 };
+    });
+    setInterval(() => { const cutoff = Date.now() - 1000; boopTimes = boopTimes.filter(ts => ts > cutoff); info('bps').textContent = `BPS: ${boopTimes.length.toFixed(2)}`; }, 500);
+
+    (function updMoon() { const d = new Date(), m = 29.5306, nm = new Date(2000,0,6,18,14), phase = ((d - nm) / 864e5) % m / m;
+      let t = 'Moon: ';
+      if (phase < .03 || phase > .97) t += 'New 🌑';
+      else if (phase < .22) t += 'Waxing C 🌒';
+      else if (phase < .28) t += 'First Q 🌓';
+      else if (phase < .47) t += 'Waxing G 🌔';
+      else if (phase < .53) t += 'Full 🌕';
+      else if (phase < .72) t += 'Waning G 🌖';
+      else if (phase < .78) t += 'Last Q 🌗';
+      else t += 'Waning C 🌘';
+      info('moonPhase').textContent = t;
+      setTimeout(updMoon, 60000);
+    })();
+
+    function updScreen() { info('screenSize').textContent = `Screen: ${innerWidth}×${innerHeight}`; }
+    addEventListener('resize', updScreen); updScreen();
+    info('browser').textContent = `Browser: ${navigator.appName}`;
+    info('platform').textContent = `Platform: ${navigator.platform}`;
+    info('language').textContent = `Language: ${navigator.language}`;
+    info('timezone').textContent = `Timezone: UTC${-new Date().getTimezoneOffset()/60}`;
+    function updOnline() { info('online').textContent = `Online: ${navigator.onLine}`; }
+    addEventListener('online', updOnline); addEventListener('offline', updOnline); updOnline();
+    if (navigator.getBattery) { navigator.getBattery().then(b => { function updBat() { const pct = (b.level*100).toFixed(0)+'%'; info('battery').textContent = `Battery: ${pct}${b.charging?' 🔌':''}`; } b.addEventListener('levelchange', updBat); b.addEventListener('chargingchange', updBat); updBat(); }); } else info('battery').textContent = 'Battery: n/a';
+    addEventListener('scroll', () => info('scroll').textContent = `Scroll Y: ${scrollY.toFixed(0)}px`);
+    const facts = [
+      "Honey never spoils.",
+      "Octopuses have three hearts.",
+      "Bananas are berries, but strawberries aren’t.",
+      "You can’t hum while holding your nose.",
+      "A group of flamingos is a flamboyance."
+    ];
+    function updFact() { info('randomFact').textContent = `Fun Fact: ${facts[Math.floor(Math.random()*facts.length)]}`; }
+    updFact(); setInterval(updFact, 15000);
+
+    (async () => {
+      const el = info('weather'); let lat, lon;
+      try { const pos = await new Promise((r,j) => navigator.geolocation ? navigator.geolocation.getCurrentPosition(r,j) : j()); lat = pos.coords.latitude; lon = pos.coords.longitude; }
+      catch { const city = prompt("Location failed. Enter city for weather:"); if (!city) { el.textContent="Weather: n/a"; return;} window._wcity=city; }
+      const key='c0bdf03da33984e173d3d84c32e220ba'; let url = lat ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}` : `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(window._wcity)}`;
+      url+=`&units=metric&appid=${key}`;
+      try { const d = await (await fetch(url)).json(); el.textContent = `Weather in ${d.name}: ${d.weather[0].description}, ${d.main.temp.toFixed(1)}°C`; }
+      catch { el.textContent='Weather: unavailable'; }
+    })();
+
+    let hue=0; setInterval(()=>{ hue=(hue+0.2)%360; document.body.style.background=`hsl(${hue},30%,95%)`; info('backgroundColor').textContent=`BG Color: hsl(${Math.round(hue)},30%,95%)`; },100);
+  </script>
+
 </body>
 </html>
