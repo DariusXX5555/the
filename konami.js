@@ -1,11 +1,21 @@
-
 // konami.js
 
 // 1) The magic sequence
 const KONAMI = [38,38,40,40,37,39,37,39,66,65];
 let pos = 0;
 
-// 2) Key listener
+// 2) Set initial favicon to apple.png
+window.addEventListener('DOMContentLoaded', () => {
+  let link = document.querySelector('link[rel="icon"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = 'apple.png';
+});
+
+// 3) Key listener
 document.addEventListener('keydown', e => {
   if (e.keyCode === KONAMI[pos]) {
     pos++;
@@ -24,7 +34,7 @@ function triggerEasterEgg() {
   // a) Change page title
   document.title = imgName;
 
-  // b) Change or inject favicon
+  // b) Change favicon
   let link = document.querySelector('link[rel="icon"]');
   if (!link) {
     link = document.createElement('link');
@@ -33,7 +43,7 @@ function triggerEasterEgg() {
   }
   link.href = imgName;
 
-  // c) Clear out everything in the body
+  // c) Clear body
   document.body.innerHTML = '';
 
   // d) Fullscreen background
@@ -45,7 +55,7 @@ function triggerEasterEgg() {
     overflow:hidden;
   `;
 
-  // e) Optional: also insert the <img> centered
+  // e) Centered image
   const img = document.createElement('img');
   img.src = imgName;
   img.alt = imgName;
@@ -58,4 +68,9 @@ function triggerEasterEgg() {
     maxHeight: '100%',
   });
   document.body.appendChild(img);
+
+  // f) Play music on loop
+  const audio = new Audio('Mysterious Place.mp3');
+  audio.loop = true;
+  audio.play();
 }
