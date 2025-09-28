@@ -32,9 +32,43 @@
     #infoPanel p { margin:4px 0; }
     table { margin: 10px auto; font-size:0.9em; border-collapse: collapse; }
     table td, table th { border:1px solid #ccc; padding:4px 8px; }
+    /* Boop Shop Styles */
+    #boopShop {
+      margin-bottom: 40px;
+      background: #fffbe9;
+      border: 2px dashed #deb887;
+      border-radius: 12px;
+      display: inline-block;
+      padding: 16px 24px;
+      box-shadow: 0 1px 8px #0002;
+    }
+    #boopShop h2 {
+      margin-top: 0;
+      color: #b07d32;
+    }
+    #shopItems {
+      padding: 0;
+      list-style: none;
+      margin: 0;
+      text-align: left;
+    }
+    #shopItems li {
+      margin-bottom: 10px;
+      padding: 4px 0;
+    }
+    #shopItems button[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
+
+  <!-- BOOP SHOP SECTION -->
+  <div id="boopShop">
+    <h2>🛒 Boop Shop</h2>
+    <ul id="shopItems"></ul>
+  </div>
 
   <h1>Darius' cool website cuz why not</h1>
 
@@ -107,32 +141,29 @@
     })();
   </script>
 
-  <!-- Original Dashboard Script -->
+  <!-- Dashboard, leaderboard, ratcatcher, info panel, etc. -->
   <script>
-    // ————— prompt for username
+    // Username & boops logic
     let username = localStorage.getItem('dash_username');
     if (!username) {
       username = prompt("Pick a username for the Boop Leaderboard:") || "Anon";
       localStorage.setItem('dash_username', username);
     }
-
-    // ————— load saved boops for this user
     let boops = parseInt(localStorage.getItem(`dash_boops_${username}`), 10) || 0;
     document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
-    let boopTimes = [];
+    window.username = username;
+    window.boops = boops;
 
-    // ————— anti‑autoclicker vars
+    let boopTimes = [];
     let lastClickTime = 0;
     let clickIntervals = [];
 
-    // ————— password check
     function checkPassword() {
       const pw = prompt("enter password");
       if (pw === "coolandepic") { alert("Access granted ✨"); }
       else if (pw !== null) alert("TRY. AGAIN.");
     }
 
-    // ————— leaderboard functions
     function saveLeader() {
       const board = JSON.parse(localStorage.getItem('dash_leaderboard') || '[]');
       const filtered = board.filter(e => e.user !== username);
@@ -152,7 +183,6 @@
     }
     renderLeaderboard();
 
-    // ————— rat click handler
     const rat = document.getElementById('ratcatcher');
     rat.addEventListener('click', e => {
       const now = Date.now();
@@ -177,12 +207,13 @@
         document.body.appendChild(c); setTimeout(() => c.remove(),1600);
       }
       boops++; boopTimes.push(now);
+      window.boops = boops; // Keep window.boops updated for shop
       document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
       localStorage.setItem(`dash_boops_${username}`, boops);
       saveLeader();
     });
 
-    // ————— particle effect
+    // Particle effect for rat
     let pInt;
     function makeParticle() {
       const r = rat.getBoundingClientRect();
@@ -195,167 +226,147 @@
     }
     rat.addEventListener('mouseenter',()=>pInt=setInterval(makeParticle,150));
     rat.addEventListener('mouseleave',()=>clearInterval(pInt));
-  </script>
 
-  <!-- DASHBOARD INFO PANEL SCRIPT: adds local time, weather, mouse stats, etc. -->
-  <script>
-(function() {
-  // Local Time
-  function updateLocalTime() {
-    const now = new Date();
-    document.getElementById('localTime').textContent = "Local Time: " +
-      now.toLocaleTimeString();
-  }
-  setInterval(updateLocalTime, 1000);
-  updateLocalTime();
-
-  // Time on Page
-  let pageSeconds = 0;
-  setInterval(() => {
-    pageSeconds++;
-    document.getElementById('timeOnPage').textContent = `Time on Page: ${pageSeconds}s`;
-  }, 1000);
-
-  // Mouse position and speed
-  let lastMouse = {x: 0, y: 0, t: Date.now()};
-  let mouseSpeed = 0;
-  document.addEventListener('mousemove', e => {
-    let now = Date.now();
-    let dx = e.clientX - lastMouse.x;
-    let dy = e.clientY - lastMouse.y;
-    let dt = (now - lastMouse.t)/1000;
-    mouseSpeed = Math.sqrt(dx*dx + dy*dy) / (dt || 1);
-    document.getElementById('mousePos').textContent = `Mouse X,Y: ${e.clientX}, ${e.clientY}`;
-    document.getElementById('mouseSpeed').textContent = `Mouse Speed: ${mouseSpeed.toFixed(1)} px/s`;
-    lastMouse = {x: e.clientX, y: e.clientY, t: now};
-  });
-
-  // Moon phase (simple approximation)
-  function getMoonPhase() {
-    // Meeus/Jenkin's algorithm (approx)
-    const lp = 2551443; // lunar period in seconds
-    const now = new Date();
-    const new_moon = new Date(Date.UTC(2001, 0, 24, 13, 35, 0));
-    const phase = ((now.getTime() - new_moon.getTime()) / 1000) % lp;
-    const phaseDay = Math.floor(phase / (24*3600));
-    const phases = [
-      "New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous",
-      "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"
-    ];
-    return phases[Math.floor((phaseDay / 29.53) * 8) % 8];
-  }
-  function updateMoon() {
-    document.getElementById('moonPhase').textContent = "Moon: " + getMoonPhase();
-  }
-  updateMoon();
-  setInterval(updateMoon, 3600*1000);
-
-  // Weather using Open-Meteo
-  function updateWeather() {
-    if (!navigator.geolocation) {
-      document.getElementById('weather').textContent = "Weather: (location unavailable)";
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(pos => {
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.current_weather) {
-          document.getElementById('weather').textContent =
-            `Weather: ${data.current_weather.temperature}°C, code ${data.current_weather.weathercode}`;
-        } else {
-          document.getElementById('weather').textContent = "Weather: (unavailable)";
-        }
-      })
-      .catch(() => document.getElementById('weather').textContent = "Weather: (API error)");
-    }, () => {
-      document.getElementById('weather').textContent = "Weather: (permission denied)";
-    });
-  }
-  updateWeather();
-
-  // Screen size
-  function updateScreen() {
-    document.getElementById('screenSize').textContent =
-      `Screen: ${window.innerWidth} × ${window.innerHeight}`;
-  }
-  updateScreen();
-  window.addEventListener('resize', updateScreen);
-
-  // Browser, platform, lang, timezone, online
-  document.getElementById('browser').textContent =
-    "Browser: " + navigator.userAgent;
-  document.getElementById('platform').textContent =
-    "Platform: " + navigator.platform;
-  document.getElementById('language').textContent =
-    "Language: " + navigator.language;
-  document.getElementById('timezone').textContent =
-    "Timezone: " + Intl.DateTimeFormat().resolvedOptions().timeZone;
-  document.getElementById('online').textContent =
-    "Online: " + (navigator.onLine ? "Yes" : "No");
-  window.addEventListener('online', () =>
-    document.getElementById('online').textContent = "Online: Yes");
-  window.addEventListener('offline', () =>
-    document.getElementById('online').textContent = "Online: No");
-
-  // Battery
-  if (navigator.getBattery) {
-    navigator.getBattery().then(b => {
-      function updateBattery() {
-        document.getElementById('battery').textContent =
-          `Battery: ${(b.level*100).toFixed(0)}%${b.charging?" ⚡":""}`;
+    // Info panel, facts, verses, etc.
+    (function() {
+      function updateLocalTime() {
+        const now = new Date();
+        document.getElementById('localTime').textContent = "Local Time: " +
+          now.toLocaleTimeString();
       }
-      updateBattery();
-      b.addEventListener('levelchange', updateBattery);
-      b.addEventListener('chargingchange', updateBattery);
-    });
-  } else {
-    document.getElementById('battery').textContent = "Battery: (unsupported)";
-  }
+      setInterval(updateLocalTime, 1000);
+      updateLocalTime();
 
-  // Scroll
-  window.addEventListener('scroll', () =>
-    document.getElementById('scroll').textContent =
-      `Scroll Y: ${window.scrollY}px`);
-  document.getElementById('scroll').textContent =
-    `Scroll Y: ${window.scrollY}px`;
+      let pageSeconds = 0;
+      setInterval(() => {
+        pageSeconds++;
+        document.getElementById('timeOnPage').textContent = `Time on Page: ${pageSeconds}s`;
+      }, 1000);
 
-  // Fun fact & Verse (demo data)
-  const facts = [
-    "Honey never spoils.",
-    "Avocados are berries.",
-    "Bananas are herbs.",
-    "Octopuses have three hearts.",
-    "A group of flamingos is a 'flamboyance'."
-  ];
-  const verses = [
-    "To be or not to be.",
-    "Seek and you shall find.",
-    "All that glitters is not gold.",
-    "The only thing to fear is fear itself."
-  ];
-  function updateFact() {
-    document.getElementById('randomFact').textContent =
-      "Fun Fact: " + facts[Math.floor(Math.random()*facts.length)];
-  }
-  function updateVerse() {
-    document.getElementById('randomVerse').textContent =
-      "Verse: " + verses[Math.floor(Math.random()*verses.length)];
-  }
-  updateFact(); updateVerse();
-  setInterval(updateFact, 10000);
-  setInterval(updateVerse, 15000);
+      let lastMouse = {x: 0, y: 0, t: Date.now()};
+      let mouseSpeed = 0;
+      document.addEventListener('mousemove', e => {
+        let now = Date.now();
+        let dx = e.clientX - lastMouse.x;
+        let dy = e.clientY - lastMouse.y;
+        let dt = (now - lastMouse.t)/1000;
+        mouseSpeed = Math.sqrt(dx*dx + dy*dy) / (dt || 1);
+        document.getElementById('mousePos').textContent = `Mouse X,Y: ${e.clientX}, ${e.clientY}`;
+        document.getElementById('mouseSpeed').textContent = `Mouse Speed: ${mouseSpeed.toFixed(1)} px/s`;
+        lastMouse = {x: e.clientX, y: e.clientY, t: now};
+      });
 
-})(); // End of JS block
-</script>
+      function getMoonPhase() {
+        const lp = 2551443; // lunar period in seconds
+        const now = new Date();
+        const new_moon = new Date(Date.UTC(2001, 0, 24, 13, 35, 0));
+        const phase = ((now.getTime() - new_moon.getTime()) / 1000) % lp;
+        const phaseDay = Math.floor(phase / (24*3600));
+        const phases = [
+          "New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous",
+          "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"
+        ];
+        return phases[Math.floor((phaseDay / 29.53) * 8) % 8];
+      }
+      function updateMoon() {
+        document.getElementById('moonPhase').textContent = "Moon: " + getMoonPhase();
+      }
+      updateMoon();
+      setInterval(updateMoon, 3600*1000);
 
-<!-- This is REGULAR HTML, not inside a <script>! -->
-<div id="boopShop" style="margin-top:40px;">
-  <h2>🛒 Boop Shop</h2>
-  <ul id="shopItems"></ul>
-</div>
+      function updateWeather() {
+        if (!navigator.geolocation) {
+          document.getElementById('weather').textContent = "Weather: (location unavailable)";
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+          fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`)
+          .then(r => r.json())
+          .then(data => {
+            if (data.current_weather) {
+              document.getElementById('weather').textContent =
+                `Weather: ${data.current_weather.temperature}°C, code ${data.current_weather.weathercode}`;
+            } else {
+              document.getElementById('weather').textContent = "Weather: (unavailable)";
+            }
+          })
+          .catch(() => document.getElementById('weather').textContent = "Weather: (API error)");
+        }, () => {
+          document.getElementById('weather').textContent = "Weather: (permission denied)";
+        });
+      }
+      updateWeather();
 
-<script src="apple-rain.js"></script>
-<script src="boop-shop.js"></script>
+      function updateScreen() {
+        document.getElementById('screenSize').textContent =
+          `Screen: ${window.innerWidth} × ${window.innerHeight}`;
+      }
+      updateScreen();
+      window.addEventListener('resize', updateScreen);
+
+      document.getElementById('browser').textContent =
+        "Browser: " + navigator.userAgent;
+      document.getElementById('platform').textContent =
+        "Platform: " + navigator.platform;
+      document.getElementById('language').textContent =
+        "Language: " + navigator.language;
+      document.getElementById('timezone').textContent =
+        "Timezone: " + Intl.DateTimeFormat().resolvedOptions().timeZone;
+      document.getElementById('online').textContent =
+        "Online: " + (navigator.onLine ? "Yes" : "No");
+      window.addEventListener('online', () =>
+        document.getElementById('online').textContent = "Online: Yes");
+      window.addEventListener('offline', () =>
+        document.getElementById('online').textContent = "Online: No");
+
+      if (navigator.getBattery) {
+        navigator.getBattery().then(b => {
+          function updateBattery() {
+            document.getElementById('battery').textContent =
+              `Battery: ${(b.level*100).toFixed(0)}%${b.charging?" ⚡":""}`;
+          }
+          updateBattery();
+          b.addEventListener('levelchange', updateBattery);
+          b.addEventListener('chargingchange', updateBattery);
+        });
+      } else {
+        document.getElementById('battery').textContent = "Battery: (unsupported)";
+      }
+
+      window.addEventListener('scroll', () =>
+        document.getElementById('scroll').textContent =
+          `Scroll Y: ${window.scrollY}px`);
+      document.getElementById('scroll').textContent =
+        `Scroll Y: ${window.scrollY}px`;
+
+      // Fun fact & Verse (demo data)
+      const facts = [
+        "Honey never spoils.",
+        "Avocados are berries.",
+        "Bananas are herbs.",
+        "Octopuses have three hearts.",
+        "A group of flamingos is a 'flamboyance'."
+      ];
+      const verses = [
+        "To be or not to be.",
+        "Seek and you shall find.",
+        "All that glitters is not gold.",
+        "The only thing to fear is fear itself."
+      ];
+      function updateFact() {
+        document.getElementById('randomFact').textContent =
+          "Fun Fact: " + facts[Math.floor(Math.random()*facts.length)];
+      }
+      function updateVerse() {
+        document.getElementById('randomVerse').textContent =
+          "Verse: " + verses[Math.floor(Math.random()*verses.length)];
+      }
+      updateFact(); updateVerse();
+      setInterval(updateFact, 10000);
+      setInterval(updateVerse, 15000);
+    })();
+  </script>
+  <script src="apple-rain.js"></script>
+  <script src="boop-shop.js"></script>
 </body>
 </html>
