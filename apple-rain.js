@@ -30,7 +30,7 @@ function startAppleRain() {
         apple.style.top = '-60px';
         apple.style.width = apple.style.height = (Math.random() * 24 + 24) + 'px';
         apple.style.pointerEvents = 'none';
-        apple.style.transition = `top 5s linear, opacity 1.5s`;
+        apple.style.transition = `top 5s linear, opacity 4.4s`;
         document.body.appendChild(apple);
 
         setTimeout(() => {
