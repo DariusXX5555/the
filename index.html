@@ -100,6 +100,7 @@
 <body>
 
   <h1>Darius' cool website cuz why not</h1>
+  <h2>(If the shop doesnt let you buy stuff refresh the page and make sure you have enough boops)</h2>
 
   <div class="button-container">
     <button onclick="checkPassword()">Enter Password</button>
@@ -163,7 +164,7 @@
 
     function checkPassword() {
       const pw = prompt("enter password");
-      if (pw === "coolandepic") { alert("Access granted ✨"); }
+      if (pw === "coolandepic") { alert("Access granted."); }
       else if (pw !== null) alert("TRY. AGAIN.");
     }
 
@@ -413,7 +414,7 @@
         }
       });
       function triggerEasterEgg() {
-        const img = 'on est on.jpg';
+        const img = 'он есть он.jpg';
         document.title = img;
         let link = document.querySelector('link[rel="icon"]');
         if (!link) {
