@@ -1,28 +1,29 @@
-/* --- Red Alert Rain Feature --- */
 function triggerRainAlert() {
-  // Show red alert banner
-  let alertDiv = document.createElement('div');
-  alertDiv.id = "redWeatherAlert";
-  alertDiv.textContent = "⚠️ Rain is about to begin!";
-  alertDiv.style.position = "fixed";
-  alertDiv.style.top = "40px";
-  alertDiv.style.left = "50%";
-  alertDiv.style.transform = "translateX(-50%)";
-  alertDiv.style.background = "#ff1a1a";
-  alertDiv.style.color = "#fff";
-  alertDiv.style.padding = "18px 36px";
-  alertDiv.style.zIndex = "10000";
-  alertDiv.style.fontWeight = "bold";
-  alertDiv.style.border = "3px solid #fff";
-  alertDiv.style.fontSize = "1.3em";
-  alertDiv.style.borderRadius = "12px";
-  alertDiv.style.boxShadow = "0 2px 20px #900a";
-  document.body.appendChild(alertDiv);
+  const wa = document.createElement('div');
+  wa.id = "weatherAlert"; // reuse the existing ID for styling
+  wa.textContent = "⚠️ Rain is about to begin!";
+  wa.style.background = "#ff4d4d"; // slightly red but still matches alert style
+  wa.style.color = "#fff";
+  wa.style.border = "2px solid #ff9999";
+  wa.style.fontSize = "1.1em"; // same as fake alerts
+  wa.style.fontWeight = "bold";
+  wa.style.padding = "12px 30px";
+  wa.style.borderRadius = "8px";
+  wa.style.boxShadow = "0 4px 18px #0002";
+  wa.style.position = "fixed";
+  wa.style.left = "50%";
+  wa.style.top = "40px";
+  wa.style.transform = "translateX(-50%)";
+  wa.style.zIndex = "9998";
+  wa.style.display = "block";
+  wa.style.animation = "popIn .4s cubic-bezier(.17,1.41,.76,1.03)";
+
+  document.body.appendChild(wa);
 
   setTimeout(() => {
-    alertDiv.textContent = "🌧️ Rain is now falling!";
+    wa.textContent = "🌧️ Rain is now falling!";
     startRainEffect();
-    setTimeout(() => alertDiv.remove(), 4000);
+    setTimeout(() => wa.remove(), 4000);
   }, 3000);
 }
 
