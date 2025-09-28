@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>How's your weather? :)</title>
-  <link rel="icon" type="image/jpeg" href="">
+  <link rel="icon" type="image/png" href="ratcatcher.jpg">
   <style>
     body {
       font-family: monospace;
@@ -32,7 +32,6 @@
     #infoPanel p { margin:4px 0; }
     table { margin: 10px auto; font-size:0.9em; border-collapse: collapse; }
     table td, table th { border:1px solid #ccc; padding:4px 8px; }
-    /* Boop Shop Styles */
     #boopShop {
       margin-bottom: 40px;
       background: #fffbe9;
@@ -42,10 +41,7 @@
       padding: 16px 24px;
       box-shadow: 0 1px 8px #0002;
     }
-    #boopShop h2 {
-      margin-top: 0;
-      color: #b07d32;
-    }
+    #boopShop h2 { margin-top: 0; color: #b07d32; }
     #shopItems {
       padding: 0;
       list-style: none;
@@ -60,7 +56,6 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
-    /* Out-of-context additions */
     #weatherAlert {
       display: none;
       position: fixed;
@@ -99,9 +94,7 @@
       display: none;
       transition: background .2s;
     }
-    #bonusBtn:hover {
-      background: #fff87d;
-    }
+    #bonusBtn:hover { background: #fff87d; }
   </style>
 </head>
 <body>
@@ -140,55 +133,17 @@
     <tbody></tbody>
   </table>
 
-  <!-- Out-of-context, random weather alert! -->
   <div id="weatherAlert"></div>
-  <!-- Bonus hidden button -->
   <button id="bonusBtn" onclick="bonusMystery()">???</button>
 
-  <!-- BOOP SHOP (now below dashboard/leaderboard) -->
+  <!-- BOOP SHOP below dashboard -->
   <div id="boopShop" style="margin-top:40px;">
     <h2>🛒 Boop Shop</h2>
     <ul id="shopItems"></ul>
   </div>
 
-  <!-- Konami Code Handler (unchanged, but with secret) -->
-  <script>
-    (function(){
-      const KONAMI = [38,38,40,40,37,39,37,39,66,65];
-      let index = 0;
-      document.addEventListener('keydown', e => {
-        if (e.keyCode === KONAMI[index]) {
-          index++;
-          if (index === KONAMI.length) {
-            triggerEasterEgg();
-            index = 0;
-          }
-        } else {
-          index = 0;
-        }
-      });
-      function triggerEasterEgg() {
-        const img = 'он есть он.jpg';
-        document.title = img;
-        let link = document.querySelector('link[rel="icon"]');
-        if (!link) {
-          link = document.createElement('link');
-          link.rel = 'icon';
-          document.head.appendChild(link);
-        }
-        link.href = img;
-        document.body.innerHTML = '';
-        document.body.style.cssText = `margin:0; padding:0; background:url('${img}') no-repeat center center fixed; background-size:cover; height:100vh; overflow:hidden;`;
-        const el = document.createElement('img');
-        el.src = img;
-        el.alt = img;
-        Object.assign(el.style, { position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: '100%', maxHeight: '100%' });
-        document.body.appendChild(el);
-      }
-    })();
-  </script>
-
-  <!-- Main dashboard, leaderboard, ratcatcher, info panel, etc. -->
+  <script src="apple-rain.js"></script>
+  <script src="boop-shop.js"></script>
   <script>
     // Username & boops logic
     let username = localStorage.getItem('dash_username');
@@ -255,7 +210,7 @@
         document.body.appendChild(c); setTimeout(() => c.remove(),1600);
       }
       boops++; boopTimes.push(now);
-      window.boops = boops; // Keep window.boops updated for shop
+      window.boops = boops;
       document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
       localStorage.setItem(`dash_boops_${username}`, boops);
       saveLeader();
@@ -267,7 +222,6 @@
       lastBoop = nowTime;
     });
 
-    // Bonus secret button logic
     function showBonus() {
       if (window.boops >= 42 && !document.getElementById('bonusBtn').style.display) {
         document.getElementById('bonusBtn').style.display = "";
@@ -279,10 +233,9 @@
       document.getElementById('boopsCount').textContent = `Boops: ${window.boops}`;
       localStorage.setItem(`dash_boops_${window.username}`, window.boops);
       document.getElementById('bonusBtn').style.display = "none";
-      renderShop();
+      if (typeof renderShop === "function") renderShop();
     }
 
-    // Particle effect for rat
     let pInt;
     function makeParticle() {
       const r = rat.getBoundingClientRect();
@@ -296,7 +249,6 @@
     rat.addEventListener('mouseenter',()=>pInt=setInterval(makeParticle,150));
     rat.addEventListener('mouseleave',()=>clearInterval(pInt));
 
-    // Info panel, facts, verses, etc.
     (function() {
       function updateLocalTime() {
         const now = new Date();
@@ -326,7 +278,7 @@
       });
 
       function getMoonPhase() {
-        const lp = 2551443; // lunar period in seconds
+        const lp = 2551443;
         const now = new Date();
         const new_moon = new Date(Date.UTC(2001, 0, 24, 13, 35, 0));
         const phase = ((now.getTime() - new_moon.getTime()) / 1000) % lp;
@@ -355,7 +307,6 @@
             if (data.current_weather) {
               document.getElementById('weather').textContent =
                 `Weather: ${data.current_weather.temperature}°C, code ${data.current_weather.weathercode}`;
-              // Out-of-context weather alert!
               if (Math.random() < 0.07) showWeatherAlert("Sharknado warning!");
               else if (Math.random() < 0.07) showWeatherAlert("Spaghetti rain expected.");
               else if (Math.random() < 0.07) showWeatherAlert("Banana storm possible. Take precautions.");
@@ -420,7 +371,6 @@
       document.getElementById('scroll').textContent =
         `Scroll Y: ${window.scrollY}px`;
 
-      // Fun fact & Verse (demo data)
       const facts = [
         "Honey never spoils.",
         "Avocados are berries.",
@@ -446,8 +396,41 @@
       setInterval(updateFact, 10000);
       setInterval(updateVerse, 15000);
     })();
+
+    // Konami Code Handler
+    (function(){
+      const KONAMI = [38,38,40,40,37,39,37,39,66,65];
+      let index = 0;
+      document.addEventListener('keydown', e => {
+        if (e.keyCode === KONAMI[index]) {
+          index++;
+          if (index === KONAMI.length) {
+            triggerEasterEgg();
+            index = 0;
+          }
+        } else {
+          index = 0;
+        }
+      });
+      function triggerEasterEgg() {
+        const img = 'on est on.jpg';
+        document.title = img;
+        let link = document.querySelector('link[rel="icon"]');
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          document.head.appendChild(link);
+        }
+        link.href = img;
+        document.body.innerHTML = '';
+        document.body.style.cssText = `margin:0; padding:0; background:url('${img}') no-repeat center center fixed; background-size:cover; height:100vh; overflow:hidden;`;
+        const el = document.createElement('img');
+        el.src = img;
+        el.alt = img;
+        Object.assign(el.style, { position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxWidth: '100%', maxHeight: '100%' });
+        document.body.appendChild(el);
+      }
+    })();
   </script>
-  <script src="apple-rain.js"></script>
-  <script src="boop-shop.js"></script>
 </body>
 </html>
