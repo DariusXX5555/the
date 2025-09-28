@@ -1,4 +1,4 @@
-// Apple rain effect script
+// Apple rain effect script using apple.png and continuous rain
 
 // Listen for the key sequence "A P P L E"
 const sequence = ['A', 'P', 'P', 'L', 'E'];
@@ -14,42 +14,49 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Function to start raining apples
 function startAppleRain() {
-    const appleEmoji = '🍎';
-    const numApples = 30;
-    for (let i = 0; i < numApples; i++) {
-        createApple();
+    const duration = 10000; // 10 seconds
+    const interval = 120;   // ms between apples
+    let raining = true;
+
+    function createApple() {
+        if (!raining) return;
+        const apple = document.createElement('img');
+        apple.className = 'falling-apple';
+        apple.src = 'apple.png'; // Ensure apple.png is at root or change path accordingly
+        apple.alt = 'apple';
+        apple.style.position = 'fixed';
+        apple.style.left = Math.random() * 100 + 'vw';
+        apple.style.top = '-60px';
+        apple.style.width = apple.style.height = (Math.random() * 24 + 24) + 'px';
+        apple.style.pointerEvents = 'none';
+        apple.style.transition = `top 2s linear, opacity 0.5s`;
+        document.body.appendChild(apple);
+
+        setTimeout(() => {
+            apple.style.top = '100vh';
+            apple.style.opacity = 0;
+        }, 50);
+
+        setTimeout(() => {
+            apple.remove();
+        }, 2200);
     }
-    // Optionally, stop the rain after some time
+
+    // Rain apples every interval ms for duration ms
+    const rainInterval = setInterval(createApple, interval);
+
     setTimeout(() => {
-        document.querySelectorAll('.falling-apple').forEach(a => a.remove());
-    }, 5000);
+        raining = false;
+        clearInterval(rainInterval);
+        // Clean up any remaining apples after a short delay
+        setTimeout(() => {
+            document.querySelectorAll('.falling-apple').forEach(a => a.remove());
+        }, 2500);
+    }, duration);
 }
 
-function createApple() {
-    const apple = document.createElement('div');
-    apple.className = 'falling-apple';
-    apple.textContent = '🍎';
-    apple.style.position = 'fixed';
-    apple.style.left = Math.random() * 100 + 'vw';
-    apple.style.top = '-2em';
-    apple.style.fontSize = (Math.random() * 24 + 24) + 'px';
-    apple.style.pointerEvents = 'none';
-    apple.style.transition = `top 2s linear, opacity 0.5s`;
-    document.body.appendChild(apple);
-
-    setTimeout(() => {
-        apple.style.top = '100vh';
-        apple.style.opacity = 0;
-    }, 50);
-
-    setTimeout(() => {
-        apple.remove();
-    }, 2200);
-}
-
-// Optional: Add some basic CSS for the apples
+// Optional: Add some basic CSS for the apples (if not already present)
 const style = document.createElement('style');
 style.textContent = `
 .falling-apple {
@@ -57,6 +64,7 @@ style.textContent = `
     opacity: 1;
     user-select: none;
     will-change: top, opacity;
+    pointer-events: none;
 }
 `;
 document.head.appendChild(style);
