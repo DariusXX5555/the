@@ -1,4 +1,4 @@
-// Out-of-context Boop Shop for Darius' website (no saving, session-only, more chaos!)
+// Out-of-context Boop Shop for Darius' website (all local images/sounds, session only, maximum chaos!)
 
 function playSound(url, volume=1) {
   const audio = new Audio(url);
@@ -106,7 +106,7 @@ const shopItems = [
         discoDiv.style.background = discoColors[i%discoColors.length];
         i++;
       }, 120);
-      playSound('https://cdn.pixabay.com/audio/2022/10/16/audio_12b0f1cfa2.mp3', 0.3);
+      playSound('disco.mp3', 0.4);
       setTimeout(()=>{
         clearInterval(discoInt);
         discoDiv.remove();
@@ -121,7 +121,7 @@ const shopItems = [
     id: "duck",
     onBuy: function() {
       const duck = document.createElement('img');
-      duck.src = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Rubber_duck_assorted_colors.jpg";
+      duck.src = "duck.png";
       duck.alt = "Rubber Duck";
       duck.style.position = "fixed";
       duck.style.bottom = "10px";
@@ -129,7 +129,7 @@ const shopItems = [
       duck.style.width = "60px";
       duck.title = "Quack.";
       document.body.appendChild(duck);
-      playSound('https://www.soundjay.com/animal/duck-quack-01.mp3', 0.3);
+      playSound('boop.mp3', 0.3);
       setTimeout(()=>duck.remove(), 15000);
     }
   },
@@ -141,7 +141,7 @@ const shopItems = [
     onBuy: function() {
       for (let i=0; i<28; i++) {
         const bean = document.createElement('img');
-        bean.src = "https://upload.wikimedia.org/wikipedia/commons/6/6b/Black_Bean.jpg";
+        bean.src = "bean.png";
         bean.style.position = "fixed";
         bean.style.left = Math.random()*100 + "vw";
         bean.style.top = "-60px";
@@ -156,7 +156,7 @@ const shopItems = [
         }, 80);
         setTimeout(()=> bean.remove(), 2950);
       }
-      playSound('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa4c1e.mp3', 0.4);
+      playSound('boop.mp3', 0.4);
       alert("IT'S BEANIN' TIME");
     }
   },
@@ -182,12 +182,11 @@ const shopItems = [
     id: "memePop",
     onBuy: function() {
       const memes = [
-        "https://i.imgflip.com/30b1gx.jpg", // Drake
-        "https://i.kym-cdn.com/photos/images/original/001/505/338/5e3.jpg", // Surprised Pikachu
-        "https://i.kym-cdn.com/photos/images/newsfeed/001/018/150/2f6.jpg", // Expanding brain
-        "https://i.kym-cdn.com/photos/images/newsfeed/002/250/753/6c7.jpg", // Woman yelling at cat
-        "https://i.imgflip.com/1bij.jpg", // Distracted boyfriend
-        "https://i.kym-cdn.com/entries/icons/original/000/041/365/silly_cat.jpg" // Silly cat
+        "meme1.jpg",
+        "meme2.jpg",
+        "meme3.jpg",
+        "meme4.jpg",
+        "meme5.jpg"
       ];
       const meme = document.createElement('img');
       meme.src = memes[Math.floor(Math.random()*memes.length)];
@@ -212,7 +211,7 @@ const shopItems = [
     id: "banana",
     onBuy: function() {
       const old = document.body.style.cursor;
-      document.body.style.cursor = "url('https://raw.githubusercontent.com/curtiscross/banana-cursor/main/banana-cursor.png') 16 16, auto";
+      document.body.style.cursor = "url('banana-cursor.png') 16 16, auto";
       setTimeout(()=>document.body.style.cursor=old, 20000);
     }
   },
@@ -223,7 +222,7 @@ const shopItems = [
     id: "cat",
     onBuy: function() {
       const cat = document.createElement('img');
-      cat.src = "https://media.giphy.com/media/v6aOjy0Qo1fIA/giphy.gif";
+      cat.src = "cat.gif";
       cat.style.position = "fixed";
       cat.style.left = "-180px";
       cat.style.bottom = "0";
@@ -262,10 +261,42 @@ const shopItems = [
       document.getElementById('randomFact').textContent =
         "Fun Fact: " + lies[Math.floor(Math.random()*lies.length)];
     }
+  },
+  {
+    name: "Dramatic Sound FX",
+    desc: "Type D R A M A to play a dramatic sound and flash the screen.",
+    cost: 20,
+    id: "drama",
+    onBuy: function() {
+      window._dramaEnabled = true;
+      if (window._dramaHandler) return;
+      window._dramaHandler = (function dramaEffect(){
+        let seq = ['D','R','A','M','A'], pos=0;
+        document.addEventListener('keydown', e=>{
+          if (!window._dramaEnabled) return;
+          if (e.key.toUpperCase() === seq[pos]) {
+            pos++; if (pos===seq.length) {
+              playSound('drama.mp3', 0.6);
+              const flash = document.createElement('div');
+              flash.style.position = "fixed";
+              flash.style.left = "0"; flash.style.top = "0";
+              flash.style.width = "100vw"; flash.style.height = "100vh";
+              flash.style.background = "#fff";
+              flash.style.opacity = "0.92";
+              flash.style.zIndex = "100000";
+              document.body.appendChild(flash);
+              setTimeout(()=>flash.remove(), 400);
+              pos=0;
+            }
+          } else pos=0;
+        });
+        return true;
+      })();
+      alert("D R A M A enabled (type it)!");
+    }
   }
 ];
 
-// Shop UI rendering and logic
 function renderShop() {
   const ul = document.getElementById('shopItems');
   if (!ul) return;
@@ -292,5 +323,4 @@ function renderShop() {
   });
 }
 
-// Render shop on page load
 window.addEventListener('DOMContentLoaded', renderShop);
