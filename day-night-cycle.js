@@ -4,6 +4,7 @@ const start = Date.now();
 const cycleLength = 6 * 60 * 1000; // 6 minutes = full 24h cycle
 
 // --- Sky Container ---
+// --- Sky Container behind all content ---
 const sky = document.createElement('div');
 Object.assign(sky.style, {
   position: 'fixed',
@@ -12,7 +13,7 @@ Object.assign(sky.style, {
   width: '100vw',
   height: '100vh',
   pointerEvents: 'none',
-  zIndex: 0,
+  zIndex: -1, // <-- negative puts it behind content
 });
 body.appendChild(sky);
 
