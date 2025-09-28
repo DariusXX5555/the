@@ -1,6 +1,5 @@
 // Boop Shop for Darius' website
 
-// Items available for purchase
 const shopItems = [
   {
     name: "Apple Rain Button",
@@ -57,7 +56,6 @@ const shopItems = [
     cost: 80,
     id: "confetti",
     onBuy: function() {
-      // Simple confetti burst
       for (let i = 0; i < 40; i++) {
         const c = document.createElement('div');
         c.className = 'confetti';
@@ -102,7 +100,6 @@ function renderShop() {
           localStorage.setItem('shop_' + item.id, "1");
           item.onBuy();
           renderShop();
-          // Update boop counter in UI
           document.getElementById('boopsCount').textContent = `Boops: ${window.boops}`;
         }
       }
@@ -113,5 +110,5 @@ function renderShop() {
   });
 }
 
-// Make sure boop count is available globally
+// Render shop after DOM & global boops/username are ready
 window.addEventListener('DOMContentLoaded', renderShop);
