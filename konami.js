@@ -32,22 +32,15 @@ document.addEventListener('keydown', e => {
 function triggerEasterEgg() {
   const imgName = 'он есть он.jpg';
 
-  // a) Change page title
+  // Change page title & favicon
   document.title = imgName;
-
-  // b) Swap favicon
-  let link = document.querySelector('link[rel="icon"]');
-  if (!link) {
-    link = document.createElement('link');
-    link.rel = 'icon';
-    document.head.appendChild(link);
-  }
+  let link = document.querySelector('link[rel="icon"]') || (() => {
+    const l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); return l;
+  })();
   link.href = imgName;
 
-  // c) Clear everything in the body
+  // Clear body and set background
   document.body.innerHTML = '';
-
-  // d) Set full‑screen background
   document.body.style.cssText = `
     margin:0;
     padding:0;
@@ -57,7 +50,7 @@ function triggerEasterEgg() {
     overflow: hidden;
   `;
 
-  // e) Center the <img> for good measure
+  // Center the image
   const img = document.createElement('img');
   img.src = imgName;
   img.alt = imgName;
@@ -71,11 +64,23 @@ function triggerEasterEgg() {
   });
   document.body.appendChild(img);
 
-  // f) Play the music on loop
+  // Play audio **via a temporary click overlay**
   const audio = new Audio('Mysterious Place.mp3');
   audio.loop = true;
-  // Try to play (might require a prior user interaction)
+
+  // Create an invisible "click-to-play" overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position:fixed;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:10001;
+  `;
+  overlay.addEventListener('click', () => {
+    audio.play();
+    overlay.remove(); // remove overlay after first click
+  });
+  document.body.appendChild(overlay);
+
+  // Optional: prompt user to click if autoplay blocked
   audio.play().catch(() => {
-    console.warn('Autoplay prevented—click or press a key first.');
+    console.warn('Autoplay prevented—click anywhere to start music!');
   });
 }
