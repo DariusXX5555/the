@@ -1,4 +1,9 @@
-// Sun & Moon container behind content
+// --- Day/Night Cycle Script ---
+const body = document.body;
+const start = Date.now();
+const cycleLength = 6 * 60 * 1000; // 6 minutes = full 24h cycle
+
+// --- Sky Container ---
 const sky = document.createElement('div');
 Object.assign(sky.style, {
   position: 'fixed',
@@ -11,6 +16,7 @@ Object.assign(sky.style, {
 });
 body.appendChild(sky);
 
+// --- Sun & Moon ---
 const sun = document.createElement('div');
 const moon = document.createElement('div');
 
@@ -35,20 +41,52 @@ Object.assign(moon.style, {
 sky.appendChild(sun);
 sky.appendChild(moon);
 
-// Inside the animation loop:
+// --- Clock Display ---
+const clock = document.createElement('div');
+clock.style.position = 'fixed';
+clock.style.top = '14px';
+clock.style.right = '14px';
+clock.style.background = '#000a';
+clock.style.color = '#0f0';
+clock.style.fontFamily = 'monospace';
+clock.style.fontSize = '1.1em';
+clock.style.padding = '6px 12px';
+clock.style.borderRadius = '6px';
+clock.style.zIndex = '10000';
+body.appendChild(clock);
+
+// --- Update Function ---
 function updateCycle() {
   const now = Date.now();
   const elapsed = (now - start) % cycleLength;
   const fraction = elapsed / cycleLength;
 
-  // Flip sun/moon movement
-  const sunY = 60 - Math.sin(fraction * 2 * Math.PI) * 40; // 0% top = horizon, 60% = below
-  const moonY = 60 - Math.sin(fraction * 2 * Math.PI + Math.PI) * 40;
+  // Background color: day (light) to night (dark)
+  const dayColor = [135, 206, 235]; // sky blue
+  const nightColor = [10, 10, 35]; // dark night
+  const mix = (c1, c2, t) => c1.map((v, i) => v*(1-t)+c2[i]*t);
+  let bgColor = mix(dayColor, nightColor, 0.5 - 0.5 * Math.cos(fraction * 2 * Math.PI));
+  body.style.background = `rgb(${bgColor.map(v => Math.round(v)).join(',')})`;
+
+  // Sun & Moon movement
+  const sunY = 50 - Math.sin(fraction * 2 * Math.PI) * 40;
+  const moonY = 50 - Math.sin(fraction * 2 * Math.PI + Math.PI) * 40;
   sun.style.top = `${sunY}%`;
   moon.style.top = `${moonY}%`;
-  // Horizontal movement if you want:
-  sun.style.left = `${50 + Math.cos(fraction*2*Math.PI)*40}%`;
-  moon.style.left = `${50 + Math.cos(fraction*2*Math.PI + Math.PI)*40}%`;
+
+  const sunX = 50 + Math.cos(fraction * 2 * Math.PI) * 40;
+  const moonX = 50 + Math.cos(fraction * 2 * Math.PI + Math.PI) * 40;
+  sun.style.left = `${sunX}%`;
+  moon.style.left = `${moonX}%`;
+
+  // Update clock
+  let hours = Math.floor(fraction * 24);
+  let minutes = Math.floor((fraction * 24 - hours) * 60);
+  let seconds = Math.floor(((fraction * 24 - hours) * 60 - minutes) * 60);
+  clock.textContent = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
 
   requestAnimationFrame(updateCycle);
 }
+
+// --- Start Cycle ---
+updateCycle();
