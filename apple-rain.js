@@ -40,7 +40,7 @@ function startAppleRain() {
 
         setTimeout(() => {
             apple.remove();
-        }, 2200);
+        }, 5200);
     }
 
     // Rain apples every interval ms for duration ms
