@@ -1,11 +1,23 @@
+// --- Random Rain Scheduler ---
+function scheduleRandomRain() {
+  // Random interval between 30s and 2 minutes
+  const nextRain = Math.random() * (120000 - 30000) + 30000; 
+  setTimeout(() => {
+    triggerRainAlert();
+    // Schedule the next rain after this one ends
+    scheduleRandomRain();
+  }, nextRain);
+}
+
+// --- Trigger Rain Alert & Start Effect ---
 function triggerRainAlert() {
   const wa = document.createElement('div');
-  wa.id = "weatherAlert"; // reuse the existing ID for styling
+  wa.id = "weatherAlert";
   wa.textContent = "⚠️ Rain is about to begin!";
-  wa.style.background = "#ff4d4d"; // slightly red but still matches alert style
+  wa.style.background = "#ff4d4d";
   wa.style.color = "#fff";
   wa.style.border = "2px solid #ff9999";
-  wa.style.fontSize = "1.1em"; // same as fake alerts
+  wa.style.fontSize = "1.1em";
   wa.style.fontWeight = "bold";
   wa.style.padding = "12px 30px";
   wa.style.borderRadius = "8px";
@@ -17,19 +29,19 @@ function triggerRainAlert() {
   wa.style.zIndex = "9998";
   wa.style.display = "block";
   wa.style.animation = "popIn .4s cubic-bezier(.17,1.41,.76,1.03)";
-
   document.body.appendChild(wa);
 
   setTimeout(() => {
     wa.textContent = "🌧️ Rain is now falling!";
     startRainEffect();
-    setTimeout(() => wa.remove(), 4000);
+    // Remove alert after 5 seconds
+    setTimeout(() => wa.remove(), 5000);
   }, 3000);
 }
 
 function startRainEffect() {
-  // Play rain sound (loop)
-  let rainAudio = document.createElement('audio');
+  // Play rain audio
+  const rainAudio = document.createElement('audio');
   rainAudio.src = "rain.mp3";
   rainAudio.loop = true;
   rainAudio.volume = 0.3;
@@ -38,8 +50,8 @@ function startRainEffect() {
   document.body.appendChild(rainAudio);
   rainAudio.play();
 
-  // Create rain container
-  let rainDiv = document.createElement('div');
+  // Rain container
+  const rainDiv = document.createElement('div');
   rainDiv.id = "rainEffect";
   rainDiv.style.pointerEvents = 'none';
   rainDiv.style.position = 'fixed';
@@ -50,11 +62,11 @@ function startRainEffect() {
   rainDiv.style.zIndex = '9999';
   document.body.appendChild(rainDiv);
 
-  // Make droplets
-  let interval = setInterval(() => {
-    let drop = document.createElement('div');
+  // Droplets
+  const interval = setInterval(() => {
+    const drop = document.createElement('div');
     drop.className = "rainDrop";
-    let dropSize = Math.random() * 4 + 5;
+    const dropSize = Math.random() * 4 + 5;
     drop.style.position = "fixed";
     drop.style.left = (Math.random() * 100) + "vw";
     drop.style.top = "-20px";
@@ -66,7 +78,7 @@ function startRainEffect() {
     drop.style.boxShadow = "0 0 6px #0044cc44";
     drop.style.zIndex = "10000";
     drop.style.transition = "top 1.7s linear, opacity 0.5s";
-    document.getElementById("rainEffect").appendChild(drop);
+    rainDiv.appendChild(drop);
     setTimeout(() => {
       drop.style.top = "100vh";
       drop.style.opacity = "0.2";
@@ -74,11 +86,15 @@ function startRainEffect() {
     setTimeout(() => drop.remove(), 2200);
   }, 80);
 
-  // End rain after 12 seconds
+  // Rain duration: 15–25 seconds
+  const rainDuration = Math.random() * (25000 - 15000) + 15000;
   setTimeout(() => {
     clearInterval(interval);
-    document.getElementById("rainEffect")?.remove();
-    document.getElementById("rainAudio")?.pause();
-    document.getElementById("rainAudio")?.remove();
-  }, 12000);
+    rainDiv.remove();
+    rainAudio.pause();
+    rainAudio.remove();
+  }, rainDuration);
 }
+
+// Start the random scheduler
+scheduleRandomRain();
