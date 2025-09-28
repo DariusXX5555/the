@@ -60,6 +60,48 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
+    /* Out-of-context additions */
+    #weatherAlert {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 40px;
+      transform: translateX(-50%);
+      background: #d4fcff;
+      color: #0e4052;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 1.1em;
+      box-shadow: 0 4px 18px #0002;
+      z-index: 9998;
+      font-weight: bold;
+      border: 2px solid #60c2e3;
+      animation: popIn .4s cubic-bezier(.17,1.41,.76,1.03);
+    }
+    @keyframes popIn {
+      0% {transform: translateX(-50%) scale(0.4);}
+      100% {transform: translateX(-50%) scale(1);}
+    }
+    #bonusBtn {
+      position: fixed;
+      right: 14px;
+      top: 14px;
+      z-index: 9999;
+      background: #fffdc4;
+      color: #665200;
+      font-weight: bold;
+      font-size: 1.2em;
+      border-radius: 8px;
+      border: 2px solid #ffe472;
+      box-shadow: 0 2px 12px #0003;
+      padding: 8px 20px;
+      cursor: pointer;
+      display: none;
+      transition: background .2s;
+    }
+    #bonusBtn:hover {
+      background: #fff87d;
+    }
   </style>
 </head>
 <body>
@@ -69,12 +111,6 @@
   <div class="button-container">
     <button onclick="checkPassword()">Enter Password</button>
     <img id="ratcatcher" src="ratcatcher.jpg" alt="Ratcatcher">
-  </div>
-
-  <!-- BOOP SHOP SECTION (now below intro) -->
-  <div id="boopShop" style="margin-top:40px;">
-    <h2>🛒 Boop Shop</h2>
-    <ul id="shopItems"></ul>
   </div>
 
   <div id="infoPanel">
@@ -104,7 +140,18 @@
     <tbody></tbody>
   </table>
 
-  <!-- Konami Code Handler (unchanged) -->
+  <!-- Out-of-context, random weather alert! -->
+  <div id="weatherAlert"></div>
+  <!-- Bonus hidden button -->
+  <button id="bonusBtn" onclick="bonusMystery()">???</button>
+
+  <!-- BOOP SHOP (now below dashboard/leaderboard) -->
+  <div id="boopShop" style="margin-top:40px;">
+    <h2>🛒 Boop Shop</h2>
+    <ul id="shopItems"></ul>
+  </div>
+
+  <!-- Konami Code Handler (unchanged, but with secret) -->
   <script>
     (function(){
       const KONAMI = [38,38,40,40,37,39,37,39,66,65];
@@ -157,6 +204,7 @@
     let boopTimes = [];
     let lastClickTime = 0;
     let clickIntervals = [];
+    let lastBoop = Date.now();
 
     function checkPassword() {
       const pw = prompt("enter password");
@@ -211,7 +259,28 @@
       document.getElementById('boopsCount').textContent = `Boops: ${boops}`;
       localStorage.setItem(`dash_boops_${username}`, boops);
       saveLeader();
+      showBonus();
+      // Calculate BPS (boops per second)
+      const nowTime = Date.now();
+      boopTimes = boopTimes.filter(t => nowTime-t < 5000);
+      document.getElementById('bps').textContent = "BPS: " + (boopTimes.length/5).toFixed(2);
+      lastBoop = nowTime;
     });
+
+    // Bonus secret button logic
+    function showBonus() {
+      if (window.boops >= 42 && !document.getElementById('bonusBtn').style.display) {
+        document.getElementById('bonusBtn').style.display = "";
+      }
+    }
+    function bonusMystery() {
+      alert("You have unlocked... THE MYSTERY OF THE BUTTON!\n(just kidding, here's 100 boops)");
+      window.boops += 100;
+      document.getElementById('boopsCount').textContent = `Boops: ${window.boops}`;
+      localStorage.setItem(`dash_boops_${window.username}`, window.boops);
+      document.getElementById('bonusBtn').style.display = "none";
+      renderShop();
+    }
 
     // Particle effect for rat
     let pInt;
@@ -286,6 +355,11 @@
             if (data.current_weather) {
               document.getElementById('weather').textContent =
                 `Weather: ${data.current_weather.temperature}°C, code ${data.current_weather.weathercode}`;
+              // Out-of-context weather alert!
+              if (Math.random() < 0.07) showWeatherAlert("Sharknado warning!");
+              else if (Math.random() < 0.07) showWeatherAlert("Spaghetti rain expected.");
+              else if (Math.random() < 0.07) showWeatherAlert("Banana storm possible. Take precautions.");
+              else if (Math.random() < 0.07) showWeatherAlert("Unicorn migration overhead.");
             } else {
               document.getElementById('weather').textContent = "Weather: (unavailable)";
             }
@@ -296,6 +370,13 @@
         });
       }
       updateWeather();
+
+      function showWeatherAlert(msg) {
+        const wa = document.getElementById('weatherAlert');
+        wa.textContent = msg;
+        wa.style.display = "block";
+        setTimeout(()=>wa.style.display="none", 6000);
+      }
 
       function updateScreen() {
         document.getElementById('screenSize').textContent =
