@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Final Page</title>
+  <style>
+    body { background: black; color: white; font-family: monospace; text-align: center; padding-top: 50px; }
+    input { padding: 10px; font-size: 16px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Enter the code:</h1>
+  <input type="text" id="codeInput" placeholder="Code">
+  <button onclick="checkCode()">Submit</button>
+  <p id="result"></p>
+
+  <script>
+    function checkCode() {
+      const input = document.getElementById('codeInput').value;
+      if(input === 'REWARD') {
+        document.getElementById('result').innerText = "For you must send me a picture of this screen. And who helped you, IF someone helped you.";
+      } else {
+        document.getElementById('result').innerText = "Wrong code!";
+      }
+    }
+  </script>
+</body>
+</html>
